@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using Plane = UnityEngine.Plane;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 public struct ResultRayCast
 {
@@ -20,7 +24,13 @@ public class Rubikscube : MonoBehaviour
 
     [SerializeField] private GameObject m_cubePrefab;
     
+    //DEBUG
+    [SerializeField] private GameObject m_planePrefab;
+    
     private List<GameObject> m_cubes;
+    
+    //The list of plane for each horizontal and vertical rotation
+    private List<Plane> m_listPlane;
 
     private ResultRayCast m_resultRayCast;
     
@@ -36,19 +46,19 @@ public class Rubikscube : MonoBehaviour
             return m_width * m_heigth;
         }
     }
-
-    
     
     private void Awake()
     {
         m_cubes = new List<GameObject>();
+        m_listPlane = new List<Plane>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        //Init the subcube of rubbixcube
         m_cubes.Capacity = m_heigth * m_width * m_depth;
-
+        
         for (int k = 0; k < m_depth; k++)
         {
             for (int j = 0; j < m_heigth; j++)
@@ -56,10 +66,45 @@ public class Rubikscube : MonoBehaviour
                 for (int i = 0; i < m_width; i++)
                 {
                     m_cubes.Add(Instantiate(m_cubePrefab, new Vector3(i, j, k), Quaternion.identity));
+
                 }
             }
         }
+        
+        //Init plan taht reprensent the rotation horizontal and vertical
+        m_listPlane.Capacity = m_heigth + m_width + m_depth;
 
+        for (int i = 0; i < m_width; i++)
+            m_listPlane.Add(new Plane(Vector3.right, i / (float)m_width * m_width));
+        
+        for (int j = 0; j < m_heigth; j++)
+            m_listPlane.Add(new Plane(Vector3.up, j / (float)m_heigth * m_heigth));
+        
+        for (int k = 0; k < m_depth; k++)
+            m_listPlane.Add(new Plane(Vector3.forward, k / (float)m_depth * m_depth));
+
+        //DEBUG
+        foreach (var plane in m_listPlane)
+        {
+            Debug.Log(plane.normal);
+
+            if (plane.normal == Vector3.right)
+            {
+                Instantiate(m_planePrefab, plane.normal * plane.distance, Quaternion.Euler(Vector3.forward * -90f))
+                    .GetComponent<MeshRenderer>().material.color = new Color(1f, 0f, 0f, 0.5f);
+            }
+            else if (plane.normal == Vector3.up)
+            {
+                Instantiate(m_planePrefab, plane.normal * plane.distance, Quaternion.identity)
+                    .GetComponent<MeshRenderer>().material.color = new Color(0f, 1f, 0f, 0.5f);
+            }
+            else
+            {
+                Instantiate(m_planePrefab, plane.normal * plane.distance, Quaternion.Euler(Vector3.right * 90f))
+                    .GetComponent<MeshRenderer>().material.color = new Color(0f, 0f, 1f, 0.5f);
+            }
+        }
+        
         m_resultRayCast.isDefinited = false;
     }
     
@@ -83,7 +128,7 @@ public class Rubikscube : MonoBehaviour
                 
                     touchTemp.transform.position = m_resultRayCast.positionMouse;
                 
-                    List<GameObject> row = GetRow(m_resultRayCast.indexFace, hit.normal);
+                    List<GameObject> row = GetColumn(m_resultRayCast.indexFace, hit.normal);
                     for (int i = 0; i < row.Count; i++)
                     {
                         for (int j = 0; j < 6; j++)

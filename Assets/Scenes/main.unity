@@ -155,6 +155,8 @@ MonoBehaviour:
   m_depth: 4
   m_cubePrefab: {fileID: 6685178312622568407, guid: 5093616e357bbce45a2096f83a17b234,
     type: 3}
+  m_planePrefab: {fileID: 899258389675698689, guid: f0fc80c965f919b4c9b7bccf78680887,
+    type: 3}
   touchTemp: {fileID: 1404966286}
   newMat: {fileID: 2100000, guid: 21a8acd45e935e84d985fb01b393216f, type: 2}
 --- !u!4 &550698974
