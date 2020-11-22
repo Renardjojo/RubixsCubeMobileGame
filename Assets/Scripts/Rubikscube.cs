@@ -34,7 +34,7 @@ public class Rubikscube : MonoBehaviour
     private List<Plane> m_listPlane;
 
     //Usefull to check the difference of position between each frame when cursor is clicked
-    private Vector3 m_lastCursorPos; 
+    private Vector2 m_lastCursorPos; 
     
     private ResultRayCast m_resultRayCast;
     
@@ -44,6 +44,7 @@ public class Rubikscube : MonoBehaviour
     
         [SerializeField] private bool m_inverseYAxis = true;
         [SerializeField] private bool m_inverseXAxis = false;
+        [SerializeField] private bool m_useMobileInput = false;
 
     [Header("Debug")]
         [SerializeField] private GameObject m_planePrefab;
@@ -133,16 +134,16 @@ public class Rubikscube : MonoBehaviour
 
         m_resultRayCast.isDefinited = false;
         
-        m_lastCursorPos = Input.mousePosition;
+        m_lastCursorPos = m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition;
     }
     
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0) || Input.touchCount == 1)
+        if (Input.GetMouseButton(0) && Input.touchCount == 1)
         {
-            RotateFace((m_lastCursorPos - Input.mousePosition).sqrMagnitude);
+            RotateFace((m_lastCursorPos - (Vector2)Input.mousePosition).sqrMagnitude);
         }
         else
         {
@@ -150,7 +151,7 @@ public class Rubikscube : MonoBehaviour
             
             if (Input.GetMouseButton(1) || Input.touchCount > 1)
             {
-                Vector2 movement = m_lastCursorPos - Input.mousePosition;
+                Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition);
                 float tempX = movement.x;
                 
                 movement.x = m_inverseYAxis ? movement.y : -movement.y;
@@ -160,7 +161,7 @@ public class Rubikscube : MonoBehaviour
             }
         }
         
-        m_lastCursorPos = Input.mousePosition;
+        m_lastCursorPos = m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition;
     }
 
     void RotateRubbixCube(Vector3 axis ,float rotationScale)
