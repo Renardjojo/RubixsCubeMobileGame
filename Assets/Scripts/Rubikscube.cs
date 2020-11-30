@@ -164,7 +164,8 @@ public class Rubikscube : MonoBehaviour
                 RotateSlice(m_selectedSlice, (90f - m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, true);
             else
                 RotateSlice(m_selectedSlice, m_sliceDeltaAngle / m_rubbixSliceRotInDegByPixel, false);
-            
+
+            m_sliceDeltaAngle = 0f;
             m_selectedPlane = new Plane(Vector3.zero, 0f);
             m_selectedSlice = null;
             m_resultRayCast.isDefinited = false;
