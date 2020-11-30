@@ -37,7 +37,11 @@ public class Rubikscube : MonoBehaviour
     private Vector2 m_lastCursorPos; 
     
     private ResultRayCast m_resultRayCast;
-    
+
+    //The slice of rubbix that is slected
+    private List<GameObject> m_selectedSlice;
+    private Plane m_selectedPlane;
+
     [Header("Input Setting")]
     //This value will be multiplicate by the length of the cursor movement when all the rubbix cube is rotate
         [SerializeField] private float m_rubbixRotationSensibility = 1f;
@@ -49,7 +53,8 @@ public class Rubikscube : MonoBehaviour
     [Header("Debug")]
         [SerializeField] private GameObject m_planePrefab;
         [SerializeField] private bool m_drawPlane = false;
-        
+        [SerializeField] private bool m_drawSelectedPlane = false;
+
         [SerializeField] private GameObject touchTemp;
         [SerializeField] private Material newMat;
     
@@ -65,6 +70,7 @@ public class Rubikscube : MonoBehaviour
     {
         m_cubes = new List<GameObject>();
         m_listPlane = new List<Plane>();
+        m_selectedSlice = new List<GameObject>();
     }
 
     // Start is called before the first frame update
@@ -93,13 +99,13 @@ public class Rubikscube : MonoBehaviour
         m_listPlane.Capacity = m_heigth + m_width + m_depth;
 
         for (int i = 0; i < m_width; i++)
-            m_listPlane.Add(new Plane(Vector3.right, i / (float)m_width * m_width));
+            m_listPlane.Add(new Plane(Vector3.right, (i / (float)m_width - 0.5f) * m_width + 0.5f));
         
         for (int j = 0; j < m_heigth; j++)
-            m_listPlane.Add(new Plane(Vector3.up, j / (float)m_heigth * m_heigth));
+            m_listPlane.Add(new Plane(Vector3.up, (j / (float)m_heigth - 0.5f) * m_heigth + 0.5f));
         
         for (int k = 0; k < m_depth; k++)
-            m_listPlane.Add(new Plane(Vector3.forward, k / (float)m_depth * m_depth));
+            m_listPlane.Add(new Plane(Vector3.forward, (k / (float)m_depth - 0.5f) * m_depth + 0.5f));
 
         //DEBUG : Display the plane of the rubbix cube
         if (m_drawPlane)
@@ -107,28 +113,7 @@ public class Rubikscube : MonoBehaviour
             foreach (var plane in m_listPlane)
             {
                 Debug.Log(plane.normal);
-
-                if (plane.normal == Vector3.right)
-                {
-                    GameObject newGo = Instantiate(m_planePrefab, plane.normal * plane.distance, Quaternion.Euler(
-                        Vector3
-                            .forward * -90f));
-                    newGo.GetComponent<MeshRenderer>().material.color = new Color(1f, 0f, 0f, 0.1f);
-                    newGo.transform.SetParent(gameObject.transform);
-                }
-                else if (plane.normal == Vector3.up)
-                {
-                    GameObject newGo = Instantiate(m_planePrefab, plane.normal * plane.distance, Quaternion.identity);
-                    newGo.GetComponent<MeshRenderer>().material.color = new Color(0f, 1f, 0f, 0.1f);
-                    newGo.transform.SetParent(gameObject.transform);
-                }
-                else
-                {
-                    GameObject newGo = Instantiate(m_planePrefab, plane.normal * plane.distance,
-                        Quaternion.Euler(Vector3.right * 90f));
-                    newGo.GetComponent<MeshRenderer>().material.color = new Color(0f, 0f, 1f, 0.1f);
-                    newGo.transform.SetParent(gameObject.transform);
-                }
+                drawDebugPlane(plane);
             }
         }
 
@@ -141,9 +126,18 @@ public class Rubikscube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0) && Input.touchCount == 1)
+        if (Input.GetMouseButton(0))
         {
-            RotateFace((m_lastCursorPos - (Vector2)Input.mousePosition).sqrMagnitude);
+            //for (int indexTouche = 0; indexTouche < Input.touchCount && m_useMobileInput; indexTouche++)
+            //{
+                Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[/*indexTouche*/ 0].position : (Vector2)Input.mousePosition);
+                float tempX = movement.x;
+                    
+                movement.x = m_inverseYAxis ? movement.y : -movement.y;
+                movement.y = m_inverseXAxis ? -tempX : tempX;
+            
+                RotateSlice(movement.sqrMagnitude);   
+            //}
         }
         else
         {
@@ -169,39 +163,49 @@ public class Rubikscube : MonoBehaviour
         transform.Rotate(axis, rotationScale * m_rubbixRotationSensibility, Space.World);
     }
 
-    void RotateFace(float rotationScale)
+    void RotateSlice(float rotationScale)
     {
-        Debug.Log("RotateFace");
-        
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); 
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (m_resultRayCast.isDefinited == true)
+        {
+            for (int i = 0; i < m_selectedSlice.Count; i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    Transform faceTransform = m_selectedSlice[i].transform.GetChild(j);
+                    float currentAngle = 0f;
+                    Vector3 currentAxis = Vector3.zero;
+                    transform.rotation.ToAngleAxis(out currentAngle, out currentAxis);
+
+                    faceTransform.RotateAround(m_selectedPlane.distance * m_selectedPlane.normal, m_selectedPlane.normal,
+                        rotationScale *
+                        m_rubbixRotationSensibility);
+                }
+            }
+        }
+
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1000))
         {
             GameObject parent = hit.collider.gameObject.transform.parent.gameObject;
             if (m_resultRayCast.isDefinited == false)
             {
-                m_resultRayCast.normalFace = hit.normal;
+                m_resultRayCast.normalFace = transform.worldToLocalMatrix * hit.normal;
                 m_resultRayCast.indexFace = m_cubes.IndexOf(parent);
                 m_resultRayCast.positionMouse = hit.point;
                 m_resultRayCast.isDefinited = true;
-                
+
                 touchTemp.transform.position = m_resultRayCast.positionMouse;
                 
-                List<GameObject> row = GetColumn(m_resultRayCast.indexFace, hit.normal);
-                for (int i = 0; i < row.Count; i++)
-                {
-                    for (int j = 0; j < 6; j++)
-                    {
-                        GameObject face = row[i].transform.GetChild(j).gameObject;
-                        face.GetComponent<Renderer>().material = newMat;
-                    }
-                }
+                m_selectedSlice = GetColumn(m_resultRayCast.indexFace, m_resultRayCast.normalFace);
+                //m_selectedSlice = GetRow(m_resultRayCast.indexFace, m_resultRayCast.normalFace);
+                m_selectedPlane = GetSelectedPlane();
             }
             else
             {
                 Vector3 direction = hit.point - m_resultRayCast.positionMouse;
                 direction.Normalize();
-                    
             }
         }
     }
@@ -257,5 +261,48 @@ public class Rubikscube : MonoBehaviour
             row.Add(m_cubes[i]);
         }
         return row;
+    }
+    
+    Plane GetSelectedPlane()
+    {
+        const float distEpsilon = 0.01f; 
+        bool isFound;
+        foreach (Plane plane in m_listPlane)
+        {
+            isFound = true;
+
+            Plane globalPlane = new Plane(transform.TransformPoint(plane.normal), plane.distance);
+
+            foreach (var faceGO in m_selectedSlice)
+            {
+                Debug.Log(globalPlane.GetDistanceToPoint(faceGO.transform.position));
+                if (Mathf.Abs(globalPlane.GetDistanceToPoint(faceGO.transform.position)) > distEpsilon)
+                {
+                    isFound = false;
+                    break;
+                }
+            }
+
+            if (isFound)
+            {
+                if (m_drawSelectedPlane)
+                    drawDebugPlane(globalPlane);
+                
+                return globalPlane;
+            }
+        }
+        
+        return new Plane();
+    }
+
+    void drawDebugPlane(Plane plane)
+    {
+        Quaternion rotation = Quaternion.LookRotation
+            (plane.normal) * Quaternion.Euler(90f, 0f, 0f);
+        
+            GameObject newGo = Instantiate(m_planePrefab, -plane.normal * plane.distance,
+                rotation);
+            newGo.GetComponent<MeshRenderer>().material.color = new Color(1f, 1f, 1f, 0.05f);
+            newGo.transform.SetParent(gameObject.transform);
     }
 }
