@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.PlayerLoop;
 using Plane = UnityEngine.Plane;
 using Quaternion = UnityEngine.Quaternion;
+using Random = System.Random;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -17,6 +18,8 @@ public struct ResultRayCast
     public int indexFace;
     public bool isDefinited;
 }
+
+
 
 public class Rubikscube : MonoBehaviour
 {
@@ -57,9 +60,9 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private bool m_drawPlane = false;
         [SerializeField] private bool m_drawSelectedPlane = false;
 
-        [SerializeField] private GameObject touchTemp;
-        [SerializeField] private Material newMat;
-    
+        [SerializeField] private GameObject m_toucheIndicatorDebug;
+        [SerializeField] private Material m_debugSelectedMaterial;
+        
     public int sizeRubiksCube
     {
         get
@@ -96,7 +99,9 @@ public class Rubikscube : MonoBehaviour
                 }
             }
         }
-        
+
+        UpdateFaceLocation();
+
         //Init plan taht reprensent the rotation horizontal and vertical
         m_listPlane.Capacity = m_heigth + m_width + m_depth;
 
@@ -169,6 +174,8 @@ public class Rubikscube : MonoBehaviour
             m_selectedPlane = new Plane(Vector3.zero, 0f);
             m_selectedSlice = null;
             m_resultRayCast.isDefinited = false;
+
+            UpdateFaceLocation();
         }
     }
 
@@ -182,7 +189,6 @@ public class Rubikscube : MonoBehaviour
         //Rotated slice of rubbix cube if is it selected
         if (m_resultRayCast.isDefinited == true)
         {
-            
             Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[/*indexTouche*/ 0].position : (Vector2)Input.mousePosition);
             float tempX = movement.x;
                     
@@ -208,10 +214,20 @@ public class Rubikscube : MonoBehaviour
                 m_resultRayCast.positionMouse = hit.point;
                 m_resultRayCast.isDefinited = true;
 
-                touchTemp.transform.position = m_resultRayCast.positionMouse;
+                m_toucheIndicatorDebug.transform.position = m_resultRayCast.positionMouse;
                 
                 //m_selectedSlice = GetColumn(m_resultRayCast.indexFace, m_resultRayCast.normalFace);
                 m_selectedSlice = GetRow(m_resultRayCast.indexFace, m_resultRayCast.normalFace);
+
+                for (int i = 0; i < m_selectedSlice.Count; i++)
+                {
+                    for (int j = 0; j < 6; j++)
+                    {
+                        GameObject face = m_selectedSlice[i].transform.GetChild(j).gameObject;
+                        face.GetComponent<Renderer>().material = m_debugSelectedMaterial;
+                    }
+                }
+
                 m_selectedPlane = GetSelectedPlane();
             }
             else
@@ -292,6 +308,37 @@ public class Rubikscube : MonoBehaviour
             row.Add(m_cubes[i]);
         }
         return row;
+    }
+   
+    void UpdateFaceLocation()
+    {
+        m_cubes.Sort(delegate(GameObject c1, GameObject c2)
+        {
+            Vector3 localPosC1 = transform.InverseTransformPoint(c1.transform.position);
+            Vector3 localPosC2 = transform.InverseTransformPoint(c2.transform.position);
+
+            if (localPosC1.z > localPosC2.z || Mathf.Approximately(localPosC1.z, localPosC2.z))
+            {
+                if (!Mathf.Approximately(localPosC1.z, localPosC2.z))
+                    return 1;
+
+                if (localPosC1.y > localPosC2.y || Mathf.Approximately(localPosC1.y, localPosC2.y))
+                {
+                    if (!Mathf.Approximately(localPosC1.y, localPosC2.y))
+                        return 1;
+                    
+
+                    if (localPosC1.x > localPosC2.x || Mathf.Approximately(localPosC1.x, localPosC2.x))
+                    {
+                        if (!Mathf.Approximately(localPosC1.x, localPosC2.x))
+                            return 1;
+                        return 0;
+                    }
+                }
+            }
+            
+            return -1;
+        });
     }
     
     Plane GetSelectedPlane()
