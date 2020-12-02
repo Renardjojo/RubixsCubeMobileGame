@@ -10,6 +10,7 @@ using Quaternion = UnityEngine.Quaternion;
 using Random = System.Random;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
+using System.Reflection;
 
 public struct ResultRayCast
 {
@@ -18,8 +19,6 @@ public struct ResultRayCast
     public int indexFace;
     public bool isDefinited;
 }
-
-
 
 public class Rubikscube : MonoBehaviour
 {
@@ -31,7 +30,7 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private GameObject m_cubePrefab;
     
     //The list of subcube that rubbixcube contain
-    private List<GameObject> m_cubes;
+    public List<GameObject> m_cubes;
     
     //The list of plane for each horizontal and vertical rotation
     private List<Plane> m_listPlane;
@@ -59,6 +58,7 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private GameObject m_planePrefab;
         [SerializeField] private bool m_drawPlane = false;
         [SerializeField] private bool m_drawSelectedPlane = false;
+        [SerializeField] private bool m_drawSelectedCube = false;
 
         [SerializeField] private GameObject m_toucheIndicatorDebug;
         [SerializeField] private Material m_debugSelectedMaterial;
@@ -100,8 +100,6 @@ public class Rubikscube : MonoBehaviour
             }
         }
 
-        UpdateFaceLocation();
-
         //Init plan taht reprensent the rotation horizontal and vertical
         m_listPlane.Capacity = m_heigth + m_width + m_depth;
 
@@ -142,7 +140,10 @@ public class Rubikscube : MonoBehaviour
         }
         else
         {
-            UnselectRubbixSlice();
+            if (m_resultRayCast.isDefinited)
+            {
+                UnselectRubbixSlice();
+            }
 
             if (Input.GetMouseButton(1) || Input.touchCount > 1)
             {
@@ -161,22 +162,19 @@ public class Rubikscube : MonoBehaviour
 
     void UnselectRubbixSlice()
     {
-        if (m_resultRayCast.isDefinited)
-        {
-            m_sliceDeltaAngle %= 90f;
-            
-            if (Mathf.Abs(m_sliceDeltaAngle) > 45f)
-                RotateSlice(m_selectedSlice, (90f - m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, true);
-            else
-                RotateSlice(m_selectedSlice, m_sliceDeltaAngle / m_rubbixSliceRotInDegByPixel, false);
+        m_sliceDeltaAngle %= 90f;
+        
+        if (Mathf.Abs(m_sliceDeltaAngle) > 45f)
+            RotateSlice(m_selectedSlice, (90f - m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, true);
+        else
+            RotateSlice(m_selectedSlice, m_sliceDeltaAngle / m_rubbixSliceRotInDegByPixel, false);
 
-            m_sliceDeltaAngle = 0f;
-            m_selectedPlane = new Plane(Vector3.zero, 0f);
-            m_selectedSlice = null;
-            m_resultRayCast.isDefinited = false;
+        m_sliceDeltaAngle = 0f;
+        m_selectedPlane = new Plane(Vector3.zero, 0f);
+        m_selectedSlice = null;
+        m_resultRayCast.isDefinited = false;
 
-            UpdateFaceLocation();
-        }
+        UpdateFaceLocation();
     }
 
     void RotateRubbixCube(Vector3 axis, float deltaMovementInPixel)
@@ -187,7 +185,7 @@ public class Rubikscube : MonoBehaviour
     void UpdateSliceControl()
     {
         //Rotated slice of rubbix cube if is it selected
-        if (m_resultRayCast.isDefinited == true)
+        if (m_resultRayCast.isDefinited)
         {
             Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[/*indexTouche*/ 0].position : (Vector2)Input.mousePosition);
             float tempX = movement.x;
@@ -201,7 +199,7 @@ public class Rubikscube : MonoBehaviour
             //bool sign = Vector2.Dot(movement,  [...]) < 0f ? false : true; 
             RotateSlice(m_selectedSlice, deltaMovementInPixel,  true /* *sign */);
         }
-        
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1000))
@@ -218,8 +216,9 @@ public class Rubikscube : MonoBehaviour
                 
                 //m_selectedSlice = GetColumn(m_resultRayCast.indexFace, m_resultRayCast.normalFace);
                 m_selectedSlice = GetRow(m_resultRayCast.indexFace, m_resultRayCast.normalFace);
-
-                for (int i = 0; i < m_selectedSlice.Count; i++)
+                
+                //DEBUG
+                for (int i = 0; i < m_selectedSlice.Count && m_drawSelectedCube; i++)
                 {
                     for (int j = 0; j < 6; j++)
                     {
@@ -242,18 +241,16 @@ public class Rubikscube : MonoBehaviour
     {
         for (int i = 0; i < slice.Count; i++)
         {
-            for (int j = 0; j < 6; j++)
-            {
-                Transform faceTransform = slice[i].transform.GetChild(j);
-                float currentAngle = 0f;
-                Vector3 currentAxis = Vector3.zero;
-                transform.rotation.ToAngleAxis(out currentAngle, out currentAxis);
+            Transform faceTransform = slice[i].transform;
 
-                float sign = direction ? 1f : -1f;
+            float currentAngle = 0f;
+            Vector3 currentAxis = Vector3.zero;
+            transform.rotation.ToAngleAxis(out currentAngle, out currentAxis);
+
+            float sign = direction ? 1f : -1f;
                 
-                faceTransform.RotateAround(m_selectedPlane.distance * m_selectedPlane.normal, m_selectedPlane.normal,
-                    deltaMovementInPixel * m_rubbixSliceRotInDegByPixel * sign);
-            }
+            faceTransform.RotateAround(m_selectedPlane.distance * m_selectedPlane.normal, m_selectedPlane.normal,
+                  deltaMovementInPixel * m_rubbixSliceRotInDegByPixel * sign);
         }
     }
     
@@ -309,38 +306,40 @@ public class Rubikscube : MonoBehaviour
         }
         return row;
     }
-   
+    
+    public static bool Approximately(float a, float b, float espilon) => Mathf.Abs(b - a) <= espilon;
+    
     void UpdateFaceLocation()
     {
         m_cubes.Sort(delegate(GameObject c1, GameObject c2)
         {
-            Vector3 localPosC1 = transform.InverseTransformPoint(c1.transform.position);
-            Vector3 localPosC2 = transform.InverseTransformPoint(c2.transform.position);
+            Vector3 localPosC1 = c1.transform.localPosition;
+            Vector3 localPosC2 = c2.transform.localPosition;
+            const float espilon = 0.001f;
 
-            if (localPosC1.z > localPosC2.z || Mathf.Approximately(localPosC1.z, localPosC2.z))
+            if (localPosC1.z > localPosC2.z || Approximately(localPosC1.z, localPosC2.z, espilon))
             {
-                if (!Mathf.Approximately(localPosC1.z, localPosC2.z))
+                if (!Approximately(localPosC1.z, localPosC2.z, espilon))
                     return 1;
 
-                if (localPosC1.y > localPosC2.y || Mathf.Approximately(localPosC1.y, localPosC2.y))
+                if (localPosC1.y > localPosC2.y || Approximately(localPosC1.y, localPosC2.y, espilon))
                 {
-                    if (!Mathf.Approximately(localPosC1.y, localPosC2.y))
+                    if (!Approximately(localPosC1.y, localPosC2.y, espilon))
                         return 1;
-                    
 
-                    if (localPosC1.x > localPosC2.x || Mathf.Approximately(localPosC1.x, localPosC2.x))
+                    if (localPosC1.x > localPosC2.x || Approximately(localPosC1.x, localPosC2.x, espilon))
                     {
-                        if (!Mathf.Approximately(localPosC1.x, localPosC2.x))
+                        if (!Approximately(localPosC1.x, localPosC2.x, espilon))
                             return 1;
+
                         return 0;
                     }
                 }
             }
-            
             return -1;
         });
     }
-    
+
     Plane GetSelectedPlane()
     {
         const float distEpsilon = 0.01f; 
@@ -369,6 +368,7 @@ public class Rubikscube : MonoBehaviour
             }
         }
         
+        Debug.Log("Cannot found plane");
         return new Plane();
     }
 
