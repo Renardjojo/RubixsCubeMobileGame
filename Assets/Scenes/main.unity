@@ -151,18 +151,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_width: 4
-  m_heigth: 4
+  m_heigth: 2
   m_depth: 4
   m_cubePrefab: {fileID: 6685178312622568407, guid: 5093616e357bbce45a2096f83a17b234,
     type: 3}
+  m_cubes: []
+  m_rubbixRotInDegByPixel: 0.01
+  m_rubbixSliceRotInDegByPixel: 0.01
+  m_inverseYAxis: 0
+  m_inverseXAxis: 0
+  m_useMobileInput: 0
   m_planePrefab: {fileID: 899258389675698689, guid: f0fc80c965f919b4c9b7bccf78680887,
     type: 3}
   m_drawPlane: 0
-  m_rubbixRotationSensibility: 0.05
-  m_inverseYAxis: 0
-  m_inverseXAxis: 0
-  touchTemp: {fileID: 1404966286}
-  newMat: {fileID: 2100000, guid: 21a8acd45e935e84d985fb01b393216f, type: 2}
+  m_drawSelectedPlane: 0
+  m_drawSelectedCube: 0
+  m_toucheIndicatorDebug: {fileID: 1404966286}
+  m_debugSelectedMaterial: {fileID: 2100000, guid: 21a8acd45e935e84d985fb01b393216f,
+    type: 2}
 --- !u!4 &550698974
 Transform:
   m_ObjectHideFlags: 0
