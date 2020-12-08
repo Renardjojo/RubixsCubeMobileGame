@@ -565,7 +565,8 @@ MonoBehaviour:
   m_inverseYAxis: 0
   m_inverseXAxis: 0
   m_useMobileInput: 0
-  m_shuffleRotInDegBySec: 110
+  m_shuffleRotInDegBySec: 1000
+  m_isShuffleCoroutineUpdate: 0
   m_planePrefab: {fileID: 899258389675698689, guid: f0fc80c965f919b4c9b7bccf78680887,
     type: 3}
   m_drawPlane: 0
