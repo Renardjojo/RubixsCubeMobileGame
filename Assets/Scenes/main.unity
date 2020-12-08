@@ -565,6 +565,8 @@ MonoBehaviour:
   m_inverseYAxis: 0
   m_inverseXAxis: 0
   m_useMobileInput: 0
+  m_shuffleRotInDegBySec: 1000
+  m_isShuffleCoroutineUpdate: 0
   m_planePrefab: {fileID: 899258389675698689, guid: f0fc80c965f919b4c9b7bccf78680887,
     type: 3}
   m_drawPlane: 0
@@ -1109,7 +1111,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Suffle death
+  m_Text: Suffle depth
 --- !u!222 &935564458
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1334,6 +1336,7 @@ GameObject:
   - component: {fileID: 1111245850}
   - component: {fileID: 1111245849}
   - component: {fileID: 1111245848}
+  - component: {fileID: 1111245851}
   m_Layer: 5
   m_Name: SuffleButton
   m_TagString: Untagged
@@ -1441,6 +1444,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1111245846}
   m_CullTransparentMesh: 0
+--- !u!114 &1111245851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111245846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8847d117ea62ff4b971d23f3e4078fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_onClickEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 550698973}
+        m_MethodName: Shuffle
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  m_slider: {fileID: 1911524749}
 --- !u!1 &1153051731
 GameObject:
   m_ObjectHideFlags: 0

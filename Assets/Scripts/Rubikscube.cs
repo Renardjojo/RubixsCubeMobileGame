@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -57,6 +58,10 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private bool m_inverseXAxis = false;
         [SerializeField] private bool m_useMobileInput = false;
 
+    [Header("Other")]
+        [SerializeField] private float m_shuffleRotInDegBySec = 90f; 
+        [SerializeField] private bool m_isShuffleCoroutineUpdate = false;
+    
     [Header("Debug")]
         [SerializeField] private GameObject m_planePrefab;
         [SerializeField] private bool m_drawPlane = false;
@@ -205,12 +210,16 @@ public class Rubikscube : MonoBehaviour
     
     void UnselectRubbixSlice()
     {
+        Debug.Log(m_sliceDeltaAngle);
         m_sliceDeltaAngle %= 90f;
+        Debug.Log(m_sliceDeltaAngle);
         
-        if (Mathf.Abs(m_sliceDeltaAngle) > 45f)
+        if (m_sliceDeltaAngle > 45f)
             RotateSlice(m_selectedSlice, (90f - m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, true);
-        else
+        else if (m_sliceDeltaAngle > -45f)
             RotateSlice(m_selectedSlice, m_sliceDeltaAngle / m_rubbixSliceRotInDegByPixel, false);
+        else
+            RotateSlice(m_selectedSlice, (90f + m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, false);
 
         m_sliceDeltaAngle = 0f;
         m_selectedPlane = new Plane(Vector3.zero, 0f);
@@ -322,17 +331,13 @@ public class Rubikscube : MonoBehaviour
 
     void RotateSlice(List<GameObject> slice, float deltaMovementInPixel, bool direction)
     {
+        Vector3 axis = transform.TransformVector(m_selectedPlane.normal);
         for (int i = 0; i < slice.Count; i++)
         {
-            Transform faceTransform = slice[i].transform;
-
-            float currentAngle = 0f;
-            Vector3 currentAxis = Vector3.zero;
-            transform.rotation.ToAngleAxis(out currentAngle, out currentAxis);
-
             float sign = direction ? 1f : -1f;
-                
-            faceTransform.RotateAround(m_selectedPlane.distance * m_selectedPlane.normal, m_selectedPlane.normal,
+
+            
+            slice[i].transform.RotateAround(m_selectedPlane.distance * axis, axis,
                   deltaMovementInPixel * m_rubbixSliceRotInDegByPixel * sign);
         }
     }
@@ -517,6 +522,22 @@ public class Rubikscube : MonoBehaviour
         Debug.Log("Cannot found plane");
         return new Plane();
     }
+    
+    List<GameObject> GetSelectedCubeWithPlane(Plane plane)
+    {
+        List<GameObject> rst = new List<GameObject>();
+        const float distEpsilon = 0.01f;
+        foreach (GameObject cube in m_cubes)
+        {
+            Plane globalPlane = new Plane(transform.TransformPoint(plane.normal), plane.distance);
+
+            if (Mathf.Abs(globalPlane.GetDistanceToPoint(cube.transform.position)) < distEpsilon)
+            {
+                rst.Add(cube);
+            }
+        }
+        return rst;
+    }
 
     void drawDebugPlane(Plane plane)
     {
@@ -527,5 +548,52 @@ public class Rubikscube : MonoBehaviour
                 rotation);
             newGo.GetComponent<MeshRenderer>().material.color = new Color(1f, 1f, 1f, 0.05f);
             newGo.transform.SetParent(gameObject.transform);
+    }
+
+    public void Shuffle(float depth)
+    {
+        if (!m_isShuffleCoroutineUpdate)
+        {
+            StartCoroutine(ShuffleCorroutine((int) depth));
+            m_isShuffleCoroutineUpdate = true;
+        }
+    }
+
+    IEnumerator ShuffleCorroutine(int depth)
+    {
+        transform.rotation = Quaternion.identity;
+        
+        for (int i = 0; i < depth; i++)
+        {
+            m_selectedPlane = m_listPlane[Random.Range(0, m_listPlane.Count)];
+            float rotation = Random.Range(1, 4) * 90f;
+            bool direction = Random.Range(0, 2) == 0;
+            
+            float currentRot = 0f;
+            do
+            {
+                currentRot += m_shuffleRotInDegBySec * Time.deltaTime;
+                float movementInPixel;
+                if (currentRot > rotation)
+                {
+                    movementInPixel = ((m_shuffleRotInDegBySec * Time.deltaTime) - (currentRot - rotation)) /
+                                      m_rubbixSliceRotInDegByPixel;
+                }
+                else
+                {
+                    movementInPixel = m_shuffleRotInDegBySec * Time.deltaTime /
+                                      m_rubbixSliceRotInDegByPixel;
+                }
+
+                RotateSlice(GetSelectedCubeWithPlane(m_selectedPlane), movementInPixel, direction);
+
+                yield return null;
+            } while (currentRot < rotation);
+            
+            UpdateFaceLocation();
+        }
+
+        m_isShuffleCoroutineUpdate = false;
+        yield break;
     }
 }
