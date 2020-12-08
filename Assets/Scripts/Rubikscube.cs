@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
+using UnityEngine.EventSystems;
 using Plane = UnityEngine.Plane;
 using Quaternion = UnityEngine.Quaternion;
-using Random = System.Random;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -77,17 +73,42 @@ public class Rubikscube : MonoBehaviour
             return m_width * m_heigth;
         }
     }
-    
-    private void Awake()
-    {
-        m_cubes = new List<GameObject>();
-        m_listPlane = new List<Plane>();
-        m_selectedSlice = new List<GameObject>();
-    }
-
     // Start is called before the first frame update
     void Start()
     {
+        Init();
+    }
+
+    void Init()
+    {
+        if (m_cubes != null)
+        {
+            foreach (var cubes in m_cubes)
+            {
+                GameObject.Destroy(cubes);
+            }
+            m_cubes.Clear();
+        }
+
+        if (m_listPlane != null)
+        {
+            m_listPlane.Clear();
+        }
+        
+        if (m_selectedSlice != null)
+        {
+            m_selectedSlice.Clear();
+        }
+        
+        m_cubes = new List<GameObject>();
+        m_listPlane = new List<Plane>();
+        m_selectedSlice = new List<GameObject>();
+        
+        //Init default transform
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity;
+        transform.localScale = Vector3.one;
+        
         //Init the subcube of rubbixcube
         m_cubes.Capacity = m_heigth * m_width * m_depth;
         
@@ -129,16 +150,25 @@ public class Rubikscube : MonoBehaviour
             }
         }
 
+        //float scale = 4f / ((m_heigth + m_width + m_depth) / 3f);
+        //transform.localScale = new  Vector3(scale, scale, scale);
+        
         m_resultRayCast.m_isDefinited = false;
         
         m_lastCursorPos = m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition;
+
+        //Init default value
+        m_lastCursorPos = Vector2.zero;
+        m_resultRayCast = new ResultRayCast();
+        m_selectedPlane = new Plane(Vector3.zero, 0f);
+        m_sliceDeltaAngle = 0f;
     }
     
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
         {
             //for (int indexTouche = 0; indexTouche < Input.touchCount && m_useMobileInput; indexTouche++)
             //{
@@ -152,7 +182,7 @@ public class Rubikscube : MonoBehaviour
                 UnselectRubbixSlice();
             }
 
-            if (Input.GetMouseButton(1) || Input.touchCount > 1)
+            if ((Input.GetMouseButton(1) || Input.touchCount > 1))
             {
                 Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition);
                 float tempX = movement.x;
@@ -167,6 +197,12 @@ public class Rubikscube : MonoBehaviour
         m_lastCursorPos = m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition;
     }
 
+    public void SetSizeAndReinit(float size)
+    {
+        m_width = m_heigth = m_depth = (int)size;
+        Init();
+    }
+    
     void UnselectRubbixSlice()
     {
         m_sliceDeltaAngle %= 90f;
@@ -223,7 +259,6 @@ public class Rubikscube : MonoBehaviour
                             face.GetComponent<Renderer>().material = m_debugSelectedMaterial;
                         }
                     }
-                        
                     
                     Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[/*indexTouche*/ 0].position : (Vector2)Input.mousePosition);
                     float tempX = movement.x;
