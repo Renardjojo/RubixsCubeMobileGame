@@ -205,12 +205,16 @@ public class Rubikscube : MonoBehaviour
     
     void UnselectRubbixSlice()
     {
+        Debug.Log(m_sliceDeltaAngle);
         m_sliceDeltaAngle %= 90f;
+        Debug.Log(m_sliceDeltaAngle);
         
-        if (Mathf.Abs(m_sliceDeltaAngle) > 45f)
+        if (m_sliceDeltaAngle > 45f)
             RotateSlice(m_selectedSlice, (90f - m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, true);
-        else
+        else if (m_sliceDeltaAngle > -45f)
             RotateSlice(m_selectedSlice, m_sliceDeltaAngle / m_rubbixSliceRotInDegByPixel, false);
+        else
+            RotateSlice(m_selectedSlice, (90f + m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, false);
 
         m_sliceDeltaAngle = 0f;
         m_selectedPlane = new Plane(Vector3.zero, 0f);
