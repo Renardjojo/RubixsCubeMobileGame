@@ -60,7 +60,7 @@ public class Rubikscube : MonoBehaviour
 
     [Header("Other")]
         [SerializeField] private float m_shuffleRotInDegBySec = 90f; 
-        [SerializeField] private bool m_isShuffleCoroutineUpdate = false;
+        private bool m_isShuffleCoroutineUpdate = false;
     
     [Header("Debug")]
         [SerializeField] private GameObject m_planePrefab;
@@ -173,7 +173,7 @@ public class Rubikscube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && !m_isShuffleCoroutineUpdate)
         {
             //for (int indexTouche = 0; indexTouche < Input.touchCount && m_useMobileInput; indexTouche++)
             //{
@@ -331,7 +331,8 @@ public class Rubikscube : MonoBehaviour
 
     void RotateSlice(List<GameObject> slice, float deltaMovementInPixel, bool direction)
     {
-        Vector3 axis = transform.TransformVector(m_selectedPlane.normal);
+        Vector3 axis = m_isShuffleCoroutineUpdate ? transform.TransformVector(m_selectedPlane.normal) : m_selectedPlane.normal;
+        
         for (int i = 0; i < slice.Count; i++)
         {
             float sign = direction ? 1f : -1f;
