@@ -28,8 +28,15 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private int m_heigth;
         [SerializeField] private int m_depth;
 
-        [SerializeField] private GameObject m_cubePrefab;
-        [SerializeField] private float m_range;
+        [SerializeField] private GameObject m_voidCubePrefab;
+        [SerializeField] private GameObject m_PlaneXPrefab;
+        [SerializeField] private GameObject m_PlaneNegXPrefab;
+        [SerializeField] private GameObject m_PlaneYPrefab;
+        [SerializeField] private GameObject m_PlaneNegYPrefab;
+        [SerializeField] private GameObject m_PlaneZPrefab;
+        [SerializeField] private GameObject m_PlaneNegZPrefab;
+        
+        [SerializeField] private float m_rangeMouseMovement;
     
     //The list of subcube that rubbixcube contain
     private List<GameObject> m_cubes;
@@ -153,8 +160,27 @@ public class Rubikscube : MonoBehaviour
             {
                 for (int i = 0; i < m_width; i++)
                 {
-                    m_cubes.Add(Instantiate(m_cubePrefab, new Vector3(i - halfWidth, j - halfHeigth, k - halfdepth), Quaternion.identity));
+                    m_cubes.Add(Instantiate(m_voidCubePrefab, new Vector3(i - halfWidth, j - halfHeigth, k - halfdepth), 
+                    Quaternion.identity));
+
                     m_cubes.Last().transform.SetParent(gameObject.transform);
+                    
+                    if (i == 0)
+                        Instantiate(m_PlaneNegXPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                    else if (i == m_width - 1)
+                        Instantiate(m_PlaneXPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                    
+                    if (j == 0)
+                        Instantiate(m_PlaneNegYPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                    else if (j == m_heigth - 1)
+                        Instantiate(m_PlaneYPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                    
+                    if (k == 0)
+                        Instantiate(m_PlaneNegZPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                    else if (k == m_depth - 1)
+                        Instantiate(m_PlaneZPrefab).transform.SetParent(m_cubes.Last().transform, false);
+
+                    
                 }
             }
         }
@@ -265,7 +291,7 @@ public class Rubikscube : MonoBehaviour
         if (m_resultRayCast.m_isDefinited == true)
         {
             Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[/*indexTouche*/ 0].position : (Vector2)Input.mousePosition);
-            if (movement.sqrMagnitude >= m_range * m_range)
+            if (movement.sqrMagnitude >= m_rangeMouseMovement * m_rangeMouseMovement)
             {
                 float dotProduct = 0.0f;
                 
