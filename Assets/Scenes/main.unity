@@ -870,9 +870,21 @@ MonoBehaviour:
   m_width: 4
   m_heigth: 4
   m_depth: 4
-  m_cubePrefab: {fileID: 6685178312622568407, guid: 5093616e357bbce45a2096f83a17b234,
+  m_voidCubePrefab: {fileID: 6685178312622568407, guid: e8a31cc379420b64b88acbde2ba750a4,
     type: 3}
-  m_range: 6
+  m_PlaneXPrefab: {fileID: 5577046370975898489, guid: 3124db1a554edfe479f3f0657aefcda4,
+    type: 3}
+  m_PlaneNegXPrefab: {fileID: 2884732151676044542, guid: eae4de556b1782647b2dd3a1ce3e8c63,
+    type: 3}
+  m_PlaneYPrefab: {fileID: 1088853179409961717, guid: 7d359090542449c418a10b973aa93201,
+    type: 3}
+  m_PlaneNegYPrefab: {fileID: 7666140980936309944, guid: 8e95bd57f098633458c5e148fe3bd7d6,
+    type: 3}
+  m_PlaneZPrefab: {fileID: 8617749556305218581, guid: e689f171e24366245907cd8be142dff3,
+    type: 3}
+  m_PlaneNegZPrefab: {fileID: 4610784899934958718, guid: 9bb98b65e9d7f54448ef74bd1aaf26c2,
+    type: 3}
+  m_rangeMouseMovement: 0
   m_rubbixRotInDegByPixel: 0.01
   m_rubbixSliceRotInDegByPixel: 0.01
   m_inverseYAxis: 0
