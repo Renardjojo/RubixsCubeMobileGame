@@ -199,7 +199,7 @@ public class Rubikscube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && m_shuffleCoroutine == null 
+        if (Input.GetMouseButton(0) /*&& !EventSystem.current.IsPointerOverGameObject() */&& m_shuffleCoroutine == null 
         && m_winCoroutine == null && m_lockSliceCoroutine == null)
         {
             UpdateSliceControl();
