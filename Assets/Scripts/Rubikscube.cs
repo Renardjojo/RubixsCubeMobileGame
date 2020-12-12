@@ -517,6 +517,9 @@ public class Rubikscube : MonoBehaviour
             }
             return -1;
         });
+        
+        //Normalize rotation for more security
+        m_cubes.ForEach(delegate(GameObject cube){ cube.transform.rotation.Normalize();});
     }
 
     Plane GetSelectedPlane()
