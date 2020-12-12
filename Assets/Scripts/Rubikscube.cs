@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -29,12 +31,18 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private int m_depth;
 
         [SerializeField] private GameObject m_voidCubePrefab;
-        [SerializeField] private GameObject m_PlaneXPrefab;
-        [SerializeField] private GameObject m_PlaneNegXPrefab;
-        [SerializeField] private GameObject m_PlaneYPrefab;
-        [SerializeField] private GameObject m_PlaneNegYPrefab;
-        [SerializeField] private GameObject m_PlaneZPrefab;
-        [SerializeField] private GameObject m_PlaneNegZPrefab;
+        [SerializeField] private GameObject m_UnitPlaneXPrefab;
+        [SerializeField] private GameObject m_UnitPlaneNegXPrefab;
+        [SerializeField] private GameObject m_UnitPlaneYPrefab;
+        [SerializeField] private GameObject m_UnitPlaneNegYPrefab;
+        [SerializeField] private GameObject m_UnitPlaneZPrefab;
+        [SerializeField] private GameObject m_UnitPlaneNegZPrefab;
+        [SerializeField] private GameObject m_UnitNeutralPlanePrefab;
+        
+        private GameObject m_NeutralPlaneRubbix1;
+        private GameObject m_NeutralPlaneRubbix2;
+        private GameObject m_NeutralPlaneSlice1;
+        private GameObject m_NeutralPlaneSlice2;
         
         [SerializeField] private float m_rangeMouseMovement;
     
@@ -138,6 +146,30 @@ public class Rubikscube : MonoBehaviour
             m_lockSliceCoroutine = null;
         }
         
+        if (m_NeutralPlaneRubbix1 == null) //If it is null, all Neutral plane is also null
+        {
+            m_NeutralPlaneRubbix1 = Instantiate(m_UnitNeutralPlanePrefab);
+            m_NeutralPlaneRubbix2 = Instantiate(m_UnitNeutralPlanePrefab);
+            m_NeutralPlaneSlice1 = Instantiate(m_UnitNeutralPlanePrefab);
+            m_NeutralPlaneSlice2 = Instantiate(m_UnitNeutralPlanePrefab);
+            
+            m_NeutralPlaneRubbix1.transform.localPosition =
+            m_NeutralPlaneSlice1.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+            
+            m_NeutralPlaneRubbix2.transform.localPosition =
+            m_NeutralPlaneSlice2.transform.localPosition = new Vector3(0f, -0.5f, 0f);
+        }
+
+        m_NeutralPlaneRubbix1.transform.localScale = 
+        m_NeutralPlaneRubbix2.transform.localScale = 
+        m_NeutralPlaneSlice1.transform.localScale = 
+        m_NeutralPlaneSlice2.transform.localScale = new Vector3(m_width, m_heigth, m_depth);
+        
+        m_NeutralPlaneRubbix1.gameObject.SetActive(false);
+        m_NeutralPlaneRubbix2.gameObject.SetActive(false);
+        m_NeutralPlaneSlice1.gameObject.SetActive(false);
+        m_NeutralPlaneSlice2.gameObject.SetActive(false);
+        
         m_cubes = new List<GameObject>();
         m_listPlane = new List<Plane>();
         m_selectedSlice = new List<GameObject>();
@@ -166,19 +198,19 @@ public class Rubikscube : MonoBehaviour
                     m_cubes.Last().transform.SetParent(gameObject.transform);
                     
                     if (i == 0)
-                        Instantiate(m_PlaneNegXPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                        Instantiate(m_UnitPlaneNegXPrefab).transform.SetParent(m_cubes.Last().transform, false);
                     else if (i == m_width - 1)
-                        Instantiate(m_PlaneXPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                        Instantiate(m_UnitPlaneXPrefab).transform.SetParent(m_cubes.Last().transform, false);
                     
                     if (j == 0)
-                        Instantiate(m_PlaneNegYPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                        Instantiate(m_UnitPlaneNegYPrefab).transform.SetParent(m_cubes.Last().transform, false);
                     else if (j == m_heigth - 1)
-                        Instantiate(m_PlaneYPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                        Instantiate(m_UnitPlaneYPrefab).transform.SetParent(m_cubes.Last().transform, false);
                     
                     if (k == 0)
-                        Instantiate(m_PlaneNegZPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                        Instantiate(m_UnitPlaneNegZPrefab).transform.SetParent(m_cubes.Last().transform, false);
                     else if (k == m_depth - 1)
-                        Instantiate(m_PlaneZPrefab).transform.SetParent(m_cubes.Last().transform, false);
+                        Instantiate(m_UnitPlaneZPrefab).transform.SetParent(m_cubes.Last().transform, false);
 
                     
                 }
@@ -372,16 +404,22 @@ public class Rubikscube : MonoBehaviour
         Vector3 axis = m_shuffleCoroutine != null ? transform.TransformVector(m_selectedPlane.normal) : m_selectedPlane
         .normal;
         
+        float sign = direction ? 1f : -1f;
+        float angle = deltaMovementInPixel * m_rubbixSliceRotInDegByPixel * sign;
+        Vector3 point = m_selectedPlane.distance * axis;
+        
         for (int i = 0; i < slice.Count; i++)
         {
-            float sign = direction ? 1f : -1f;
-
-            float angle = deltaMovementInPixel * m_rubbixSliceRotInDegByPixel * sign;
-            Vector3 point = m_selectedPlane.distance * axis;
             Vector3 position = slice[i].transform.position;
             slice[i].transform.position = point + Quaternion.AngleAxis(angle, axis) * (position - point);
             slice[i].transform.rotation = Quaternion.AngleAxis(angle, axis) * slice[i].transform.rotation;
         }
+        
+        Vector3 up = Vector3.Dot(slice.Last().transform.up, m_selectedPlane.normal) < 0.5f
+            ? slice.Last().transform.up
+            : Vector3.Dot(slice.Last().transform.right, m_selectedPlane.normal) < 0.5f ? slice.Last().transform.right : slice.Last().transform.forward;
+        m_NeutralPlaneSlice1.transform.rotation = Quaternion.LookRotation(-m_selectedPlane.normal, up);
+        m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(m_selectedPlane.normal, up);
     }
 
     void DefinitedDirectionTurn(Vector3 direction)
@@ -391,18 +429,49 @@ public class Rubikscube : MonoBehaviour
         {
             m_resultRayCast.m_directionRowDefinited = true;
             m_selectedSlice = m_resultRayCast.m_column;
-            m_selectedPlane = GetSelectedPlane();
-            Debug.Log("COLUMN");
         }
         else
         {
             m_resultRayCast.m_directionRowDefinited = false;
             m_selectedSlice = m_resultRayCast.m_row;
-            m_selectedPlane = GetSelectedPlane();
-            Debug.Log("ROW");
         }
+        
+        m_selectedPlane = GetSelectedPlane();
 
+        FillSliceVoidWithNeutralPlane();
+        
         m_resultRayCast.m_directionTurnIsDefinited = true;
+    }
+
+    void FillSliceVoidWithNeutralPlane()
+    {
+        if (m_selectedPlane.distance < (0.5f * m_width - 0.5f))
+        {
+            m_NeutralPlaneRubbix2.SetActive(true);
+            m_NeutralPlaneSlice2.SetActive(true);
+        }
+        
+        if (m_selectedPlane.distance > -(0.5f * m_width - 0.5f))
+        {
+            m_NeutralPlaneRubbix1.SetActive(true);
+            m_NeutralPlaneSlice1.SetActive(true);
+        }
+        
+        m_NeutralPlaneRubbix1.transform.position =
+            m_NeutralPlaneSlice1.transform.position = m_selectedPlane.normal * -(m_selectedPlane.distance - 0.5f);
+        
+        m_NeutralPlaneRubbix2.transform.position = 
+            m_NeutralPlaneSlice2.transform.position = m_selectedPlane.normal * -(m_selectedPlane.distance + 0.5f);
+        
+        Vector3 up = Vector3.Dot(transform.up, m_selectedPlane.normal) < 0.5f
+            ? transform.up
+            : Vector3.Dot(transform.right, m_selectedPlane.normal) < 0.5f ? transform.right : transform.forward;
+        
+        m_NeutralPlaneRubbix2.transform.rotation =
+            m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(-m_selectedPlane.normal, up);
+        
+        m_NeutralPlaneRubbix1.transform.rotation =
+            m_NeutralPlaneSlice1.transform.rotation = Quaternion.LookRotation(m_selectedPlane.normal, up);
     }
     
     List<GameObject> GetColumn(int index, Vector3 normal)
@@ -641,6 +710,10 @@ public class Rubikscube : MonoBehaviour
         
         m_selectedPlane = new Plane(Vector3.zero, 0f);
         m_selectedSlice = null;
+        m_NeutralPlaneRubbix1.SetActive(false);
+        m_NeutralPlaneRubbix2.SetActive(false);
+        m_NeutralPlaneSlice1.SetActive(false);
+        m_NeutralPlaneSlice2.SetActive(false);
         
         UpdateFaceLocation();
 
@@ -667,6 +740,7 @@ public class Rubikscube : MonoBehaviour
         for (int i = 0; i < depth; i++)
         {
             m_selectedPlane = m_listPlane[Random.Range(0, m_listPlane.Count)];
+            FillSliceVoidWithNeutralPlane();
             float rotation = Random.Range(1, 4) * 90f;
             bool direction = Random.Range(0, 2) == 0;
             
@@ -691,8 +765,15 @@ public class Rubikscube : MonoBehaviour
                 yield return null;
             } while (currentRot < rotation);
             
+            m_NeutralPlaneRubbix1.gameObject.SetActive(false);
+            m_NeutralPlaneRubbix2.gameObject.SetActive(false);
+            m_NeutralPlaneSlice1.gameObject.SetActive(false);
+            m_NeutralPlaneSlice2.gameObject.SetActive(false);
+            
             UpdateFaceLocation();
         }
+        
+
         
         m_shuffleCoroutine = null;
         yield break;

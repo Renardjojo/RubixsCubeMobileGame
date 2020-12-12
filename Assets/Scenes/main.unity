@@ -872,19 +872,21 @@ MonoBehaviour:
   m_depth: 4
   m_voidCubePrefab: {fileID: 6685178312622568407, guid: e8a31cc379420b64b88acbde2ba750a4,
     type: 3}
-  m_PlaneXPrefab: {fileID: 5577046370975898489, guid: 3124db1a554edfe479f3f0657aefcda4,
+  m_UnitPlaneXPrefab: {fileID: 5577046370975898489, guid: 3124db1a554edfe479f3f0657aefcda4,
     type: 3}
-  m_PlaneNegXPrefab: {fileID: 2884732151676044542, guid: eae4de556b1782647b2dd3a1ce3e8c63,
+  m_UnitPlaneNegXPrefab: {fileID: 2884732151676044542, guid: eae4de556b1782647b2dd3a1ce3e8c63,
     type: 3}
-  m_PlaneYPrefab: {fileID: 1088853179409961717, guid: 7d359090542449c418a10b973aa93201,
+  m_UnitPlaneYPrefab: {fileID: 1088853179409961717, guid: 7d359090542449c418a10b973aa93201,
     type: 3}
-  m_PlaneNegYPrefab: {fileID: 7666140980936309944, guid: 8e95bd57f098633458c5e148fe3bd7d6,
+  m_UnitPlaneNegYPrefab: {fileID: 7666140980936309944, guid: 8e95bd57f098633458c5e148fe3bd7d6,
     type: 3}
-  m_PlaneZPrefab: {fileID: 8617749556305218581, guid: e689f171e24366245907cd8be142dff3,
+  m_UnitPlaneZPrefab: {fileID: 8617749556305218581, guid: e689f171e24366245907cd8be142dff3,
     type: 3}
-  m_PlaneNegZPrefab: {fileID: 4610784899934958718, guid: 9bb98b65e9d7f54448ef74bd1aaf26c2,
+  m_UnitPlaneNegZPrefab: {fileID: 4610784899934958718, guid: 9bb98b65e9d7f54448ef74bd1aaf26c2,
     type: 3}
-  m_rangeMouseMovement: 0
+  m_UnitNeutralPlanePrefab: {fileID: 8617749556305218581, guid: ec2efd3f538b8eb418ff3600040f2efb,
+    type: 3}
+  m_rangeMouseMovement: 6
   m_rubbixRotInDegByPixel: 0.01
   m_rubbixSliceRotInDegByPixel: 0.01
   m_inverseYAxis: 0
