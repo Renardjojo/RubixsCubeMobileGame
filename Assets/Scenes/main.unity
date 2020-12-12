@@ -872,7 +872,7 @@ MonoBehaviour:
   m_depth: 4
   m_cubePrefab: {fileID: 6685178312622568407, guid: 5093616e357bbce45a2096f83a17b234,
     type: 3}
-  m_range: 0.25
+  m_range: 6
   m_rubbixRotInDegByPixel: 0.01
   m_rubbixSliceRotInDegByPixel: 0.01
   m_inverseYAxis: 0
