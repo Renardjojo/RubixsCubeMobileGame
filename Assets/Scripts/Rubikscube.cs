@@ -60,12 +60,16 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private float m_shuffleRotInDegBySec = 90f;
         private Coroutine m_shuffleCoroutine;
 
-        [Header("Win Event")]
+    [Header("Win Event")]
         [SerializeField] private Vector3 m_winRotationAxis;
         [SerializeField] private float m_winRotationSpeedInDegBySec;
         [SerializeField] private UnityEvent m_onPlayerWin;
         private Coroutine m_winCoroutine;
     
+    [Header("Lock slice setting")]
+        [SerializeField] private float m_lockSliceRotationSpeedInDegBySec;
+        private Coroutine m_lockSliceCoroutine;
+
     [Header("Debug")]
         [SerializeField] private GameObject m_planePrefab;
         [SerializeField] private bool m_drawPlane = false;
@@ -107,6 +111,24 @@ public class Rubikscube : MonoBehaviour
         if (m_selectedSlice != null)
         {
             m_selectedSlice.Clear();
+        }
+        
+        if (m_shuffleCoroutine != null)
+        {
+            StopCoroutine(m_shuffleCoroutine);
+            m_shuffleCoroutine = null;
+        }
+        
+        if (m_winCoroutine != null)
+        {
+            StopCoroutine(m_winCoroutine);
+            m_winCoroutine = null;
+        }
+        
+        if (m_lockSliceCoroutine != null)
+        {
+            StopCoroutine(m_lockSliceCoroutine);
+            m_lockSliceCoroutine = null;
         }
         
         m_cubes = new List<GameObject>();
@@ -178,7 +200,7 @@ public class Rubikscube : MonoBehaviour
     void Update()
     {
         if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && m_shuffleCoroutine == null 
-        && m_winCoroutine == null)
+        && m_winCoroutine == null && m_lockSliceCoroutine == null)
         {
             UpdateSliceControl();
         }
@@ -206,12 +228,6 @@ public class Rubikscube : MonoBehaviour
 
     public void SetSizeAndReinit(float size)
     {
-        if (m_shuffleCoroutine != null)
-        {
-            StopCoroutine(m_shuffleCoroutine);
-            m_shuffleCoroutine = null;
-        }
-            
         m_width = m_heigth = m_depth = (int)size;
         Init();
     }
@@ -221,25 +237,19 @@ public class Rubikscube : MonoBehaviour
         m_sliceDeltaAngle %= 90f;
         
         if (m_sliceDeltaAngle > 45f)
-            RotateSlice(m_selectedSlice, (90f - m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, true);
+            m_lockSliceCoroutine = StartCoroutine(SmoothSliceRotationCorroutine(m_selectedSlice, (90f - m_sliceDeltaAngle), true, m_lockSliceRotationSpeedInDegBySec));
+        else if (m_sliceDeltaAngle > 0f)
+            m_lockSliceCoroutine = StartCoroutine(SmoothSliceRotationCorroutine(m_selectedSlice, m_sliceDeltaAngle, false, m_lockSliceRotationSpeedInDegBySec));
         else if (m_sliceDeltaAngle > -45f)
-            RotateSlice(m_selectedSlice, m_sliceDeltaAngle / m_rubbixSliceRotInDegByPixel, false);
+            m_lockSliceCoroutine = StartCoroutine(SmoothSliceRotationCorroutine(m_selectedSlice, -m_sliceDeltaAngle, true, m_lockSliceRotationSpeedInDegBySec));
         else
-            RotateSlice(m_selectedSlice, (90f + m_sliceDeltaAngle) / m_rubbixSliceRotInDegByPixel, false);
-
+            m_lockSliceCoroutine = StartCoroutine(SmoothSliceRotationCorroutine(m_selectedSlice, (90f + m_sliceDeltaAngle), 
+            false, m_lockSliceRotationSpeedInDegBySec));
+        
         m_sliceDeltaAngle = 0f;
-        m_selectedPlane = new Plane(Vector3.zero, 0f);
-        m_selectedSlice = null;
         m_resultRayCast.m_isDefinited = false;
         m_resultRayCast.m_directionTurnIsDefinited = false;
         m_resultRayCast.m_directionRowDefinited = false;
-
-        UpdateFaceLocation();
-
-        if (CheckIfPlayerWin())
-        {
-            m_onPlayerWin?.Invoke();
-        }
     }
     
     void RotateRubbixCube(Vector3 axis, float deltaMovementInPixel)
@@ -496,6 +506,9 @@ public class Rubikscube : MonoBehaviour
             }
             return -1;
         });
+        
+        //Normalize rotation for more security
+        m_cubes.ForEach(delegate(GameObject cube){ cube.transform.rotation.Normalize();});
     }
 
     Plane GetSelectedPlane()
@@ -573,7 +586,46 @@ public class Rubikscube : MonoBehaviour
 
         return true;
     }
-    
+
+    IEnumerator SmoothSliceRotationCorroutine(List<GameObject> slice,  float rotation,  bool direction, 
+    float angularSpeedInDegBySec)
+    {
+        float currentRot = 0f;
+        do
+        {
+            currentRot += angularSpeedInDegBySec * Time.deltaTime;
+            float movementInPixel;
+
+            if (currentRot > rotation)
+            {
+                movementInPixel = ((angularSpeedInDegBySec * Time.deltaTime) - (currentRot - rotation)) /
+                                  m_rubbixSliceRotInDegByPixel;
+            }
+            else
+            {
+                movementInPixel = angularSpeedInDegBySec * Time.deltaTime /
+                                  m_rubbixSliceRotInDegByPixel;
+            }
+            
+
+            RotateSlice(slice, movementInPixel, direction);
+
+            yield return null;
+        } while (currentRot < rotation);
+        
+        m_selectedPlane = new Plane(Vector3.zero, 0f);
+        m_selectedSlice = null;
+        
+        UpdateFaceLocation();
+
+        if (CheckIfPlayerWin())
+        {
+            m_onPlayerWin?.Invoke();
+        }
+        
+        m_lockSliceCoroutine = null;
+    }
+
     public void Shuffle(float depth)
     {
         if (m_shuffleCoroutine == null)
