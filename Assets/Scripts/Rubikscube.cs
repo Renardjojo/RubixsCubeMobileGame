@@ -389,7 +389,6 @@ public class Rubikscube : MonoBehaviour
                         face.GetComponent<Renderer>().material = m_debugSelectedMaterial;
                     }
                 }
-                
 
                 m_toucheIndicatorDebug.transform.position = hit.point;
                 m_resultRayCast.m_isDefinited = true;
@@ -413,13 +412,14 @@ public class Rubikscube : MonoBehaviour
             slice[i].transform.rotation = Quaternion.AngleAxis(angle, axis) * slice[i].transform.rotation;
         }
         
-        Vector3 up = Mathf.Abs(Vector3.Dot(slice.Last().transform.up, m_selectedPlane.normal)) < 0.5f
+        Vector3 up = Mathf.Abs(Vector3.Dot(slice.Last().transform.up, axis)) < 0.5f
             ? slice.Last().transform.up
-            : Mathf.Abs(Vector3.Dot(slice.Last().transform.right, m_selectedPlane.normal)) < 0.5f 
+            : Mathf.Abs(Vector3.Dot(slice.Last().transform.right, axis)) < 0.5f 
                 ? slice.Last().transform.right 
                 : slice.Last().transform.forward;
-        m_NeutralPlaneSlice1.transform.rotation = Quaternion.LookRotation(-m_selectedPlane.normal, up);
-        m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(m_selectedPlane.normal, up);
+        
+        m_NeutralPlaneSlice1.transform.rotation = Quaternion.LookRotation(-axis, up);
+        m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(axis, up);
     }
 
     void DefinitedDirectionTurn(Vector3 direction)
@@ -445,6 +445,9 @@ public class Rubikscube : MonoBehaviour
 
     void FillSliceVoidWithNeutralPlane()
     {
+        Vector3 axis = m_shuffleCoroutine != null ? transform.TransformVector(m_selectedPlane.normal) : m_selectedPlane
+            .normal;
+        
         if (m_selectedPlane.distance < (0.5f * m_width - 0.5f))
         {
             m_NeutralPlaneRubbix2.SetActive(true);
@@ -458,20 +461,20 @@ public class Rubikscube : MonoBehaviour
         }
         
         m_NeutralPlaneRubbix1.transform.position =
-            m_NeutralPlaneSlice1.transform.position = m_selectedPlane.normal * -(m_selectedPlane.distance - 0.5f);
+            m_NeutralPlaneSlice1.transform.position = axis * -(m_selectedPlane.distance - 0.5f);
         
         m_NeutralPlaneRubbix2.transform.position = 
-            m_NeutralPlaneSlice2.transform.position = m_selectedPlane.normal * -(m_selectedPlane.distance + 0.5f);
+            m_NeutralPlaneSlice2.transform.position = axis * -(m_selectedPlane.distance + 0.5f);
         
-        Vector3 up = Mathf.Abs(Vector3.Dot(transform.up, m_selectedPlane.normal)) < 0.5f
+        Vector3 up = Mathf.Abs(Vector3.Dot(transform.up, axis)) < 0.5f
             ? transform.up
-            : Mathf.Abs(Vector3.Dot(transform.right, m_selectedPlane.normal)) < 0.5f ? transform.right : transform.forward;
+            : Mathf.Abs(Vector3.Dot(transform.right, axis)) < 0.5f ? transform.right : transform.forward;
         
         m_NeutralPlaneRubbix2.transform.rotation =
-            m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(-m_selectedPlane.normal, up);
+            m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(-axis, up);
         
         m_NeutralPlaneRubbix1.transform.rotation =
-            m_NeutralPlaneSlice1.transform.rotation = Quaternion.LookRotation(m_selectedPlane.normal, up);
+            m_NeutralPlaneSlice1.transform.rotation = Quaternion.LookRotation(axis, up);
     }
     
     List<GameObject> GetColumn(int index, Vector3 normal)
@@ -740,13 +743,13 @@ public class Rubikscube : MonoBehaviour
         for (int i = 0; i < depth; i++)
         {
             m_selectedPlane = m_listPlane[Random.Range(0, m_listPlane.Count)];
-            FillSliceVoidWithNeutralPlane();
             float rotation = Random.Range(1, 4) * 90f;
             bool direction = Random.Range(0, 2) == 0;
             
             float currentRot = 0f;
             do
             {
+                FillSliceVoidWithNeutralPlane();
                 currentRot += m_shuffleRotInDegBySec * Time.deltaTime;
                 float movementInPixel;
                 if (currentRot > rotation)
@@ -759,7 +762,7 @@ public class Rubikscube : MonoBehaviour
                     movementInPixel = m_shuffleRotInDegBySec * Time.deltaTime /
                                       m_rubbixSliceRotInDegByPixel;
                 }
-
+                
                 RotateSlice(GetSelectedCubeWithPlane(m_selectedPlane), movementInPixel, direction);
 
                 yield return null;
