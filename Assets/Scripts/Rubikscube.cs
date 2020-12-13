@@ -234,7 +234,6 @@ public class Rubikscube : MonoBehaviour
         {
             foreach (var plane in m_listPlane)
             {
-                Debug.Log(plane.normal);
                 drawDebugPlane(plane);
             }
         }
@@ -369,7 +368,6 @@ public class Rubikscube : MonoBehaviour
                 GameObject parent = hit.collider.gameObject.transform.parent.gameObject;
                 m_resultRayCast.m_normalFace = transform.worldToLocalMatrix * hit.normal;
                 int indexFace = m_cubes.IndexOf(parent);
-                Debug.Log(m_resultRayCast.m_normalFace);
 
                 //Get Column Slice to have the plane
                 m_selectedSlice = GetColumn(indexFace, m_resultRayCast.m_normalFace);
@@ -422,13 +420,6 @@ public class Rubikscube : MonoBehaviour
                 : slice.Last().transform.forward;
         m_NeutralPlaneSlice1.transform.rotation = Quaternion.LookRotation(-m_selectedPlane.normal, up);
         m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(m_selectedPlane.normal, up);
-        
-        Debug.Log(Vector3.Dot(slice.Last().transform.up, m_selectedPlane.normal) + " " + Vector3.Dot(slice.Last().transform.right, m_selectedPlane.normal) + " " + up);
-        
-        Debug.DrawLine(m_NeutralPlaneSlice1.transform.position, m_NeutralPlaneSlice1.transform.position + up * 
-            100f, Color.green, 1f);
-        Debug.DrawLine(m_NeutralPlaneSlice1.transform.position, m_NeutralPlaneSlice1.transform.position - 
-                                                                m_selectedPlane.normal * 100f, Color.yellow, 1f);
     }
 
     void DefinitedDirectionTurn(Vector3 direction)
@@ -475,11 +466,6 @@ public class Rubikscube : MonoBehaviour
         Vector3 up = Mathf.Abs(Vector3.Dot(transform.up, m_selectedPlane.normal)) < 0.5f
             ? transform.up
             : Mathf.Abs(Vector3.Dot(transform.right, m_selectedPlane.normal)) < 0.5f ? transform.right : transform.forward;
-        
-        Debug.DrawLine(m_NeutralPlaneRubbix2.transform.position, m_NeutralPlaneRubbix2.transform.position + up * 
-        100f, Color.blue, 10f);
-        Debug.DrawLine(m_NeutralPlaneRubbix2.transform.position, m_NeutralPlaneRubbix2.transform.position - 
-        m_selectedPlane.normal * 100f, Color.red, 10f);
         
         m_NeutralPlaneRubbix2.transform.rotation =
             m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(-m_selectedPlane.normal, up);
