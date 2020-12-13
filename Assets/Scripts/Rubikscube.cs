@@ -257,8 +257,8 @@ public class Rubikscube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0) /*&& !EventSystem.current.IsPointerOverGameObject() */&& m_shuffleCoroutine == null 
-        && m_winCoroutine == null && m_lockSliceCoroutine == null)
+        if (Input.GetMouseButton(0) && (!EventSystem.current.IsPointerOverGameObject() || m_resultRayCast.m_isDefinited)
+                                    && m_shuffleCoroutine == null && m_winCoroutine == null && m_lockSliceCoroutine == null)
         {
             UpdateSliceControl();
         }
@@ -415,11 +415,20 @@ public class Rubikscube : MonoBehaviour
             slice[i].transform.rotation = Quaternion.AngleAxis(angle, axis) * slice[i].transform.rotation;
         }
         
-        Vector3 up = Vector3.Dot(slice.Last().transform.up, m_selectedPlane.normal) < 0.5f
+        Vector3 up = Mathf.Abs(Vector3.Dot(slice.Last().transform.up, m_selectedPlane.normal)) < 0.5f
             ? slice.Last().transform.up
-            : Vector3.Dot(slice.Last().transform.right, m_selectedPlane.normal) < 0.5f ? slice.Last().transform.right : slice.Last().transform.forward;
+            : Mathf.Abs(Vector3.Dot(slice.Last().transform.right, m_selectedPlane.normal)) < 0.5f 
+                ? slice.Last().transform.right 
+                : slice.Last().transform.forward;
         m_NeutralPlaneSlice1.transform.rotation = Quaternion.LookRotation(-m_selectedPlane.normal, up);
         m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(m_selectedPlane.normal, up);
+        
+        Debug.Log(Vector3.Dot(slice.Last().transform.up, m_selectedPlane.normal) + " " + Vector3.Dot(slice.Last().transform.right, m_selectedPlane.normal) + " " + up);
+        
+        Debug.DrawLine(m_NeutralPlaneSlice1.transform.position, m_NeutralPlaneSlice1.transform.position + up * 
+            100f, Color.green, 1f);
+        Debug.DrawLine(m_NeutralPlaneSlice1.transform.position, m_NeutralPlaneSlice1.transform.position - 
+                                                                m_selectedPlane.normal * 100f, Color.yellow, 1f);
     }
 
     void DefinitedDirectionTurn(Vector3 direction)
@@ -463,9 +472,14 @@ public class Rubikscube : MonoBehaviour
         m_NeutralPlaneRubbix2.transform.position = 
             m_NeutralPlaneSlice2.transform.position = m_selectedPlane.normal * -(m_selectedPlane.distance + 0.5f);
         
-        Vector3 up = Vector3.Dot(transform.up, m_selectedPlane.normal) < 0.5f
+        Vector3 up = Mathf.Abs(Vector3.Dot(transform.up, m_selectedPlane.normal)) < 0.5f
             ? transform.up
-            : Vector3.Dot(transform.right, m_selectedPlane.normal) < 0.5f ? transform.right : transform.forward;
+            : Mathf.Abs(Vector3.Dot(transform.right, m_selectedPlane.normal)) < 0.5f ? transform.right : transform.forward;
+        
+        Debug.DrawLine(m_NeutralPlaneRubbix2.transform.position, m_NeutralPlaneRubbix2.transform.position + up * 
+        100f, Color.blue, 10f);
+        Debug.DrawLine(m_NeutralPlaneRubbix2.transform.position, m_NeutralPlaneRubbix2.transform.position - 
+        m_selectedPlane.normal * 100f, Color.red, 10f);
         
         m_NeutralPlaneRubbix2.transform.rotation =
             m_NeutralPlaneSlice2.transform.rotation = Quaternion.LookRotation(-m_selectedPlane.normal, up);
