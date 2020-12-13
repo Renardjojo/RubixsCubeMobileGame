@@ -70,6 +70,7 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private bool m_inverseYAxis = true;
         [SerializeField] private bool m_inverseXAxis = false;
         [SerializeField] private bool m_useMobileInput = false;
+        private bool m_screenIsTouch = false;
 
     [Header("Suffle Event")]
         [SerializeField] private float m_shuffleRotInDegBySec = 90f;
@@ -243,8 +244,9 @@ public class Rubikscube : MonoBehaviour
         
         m_resultRayCast.m_isDefinited = false;
         
-        m_lastCursorPos = m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition;
-
+        m_screenIsTouch = Input.touchCount > 0;
+        m_lastCursorPos = m_useMobileInput ? m_screenIsTouch ? Input.GetTouch(0).position : m_lastCursorPos : (Vector2)Input.mousePosition;
+        
         //Init default value
         m_lastCursorPos = Vector2.zero;
         m_resultRayCast = new ResultRayCast();
@@ -256,8 +258,8 @@ public class Rubikscube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0) && (!EventSystem.current.IsPointerOverGameObject() || m_resultRayCast.m_isDefinited)
-                                    && m_shuffleCoroutine == null && m_winCoroutine == null && m_lockSliceCoroutine == null)
+        if (((!m_useMobileInput && Input.GetMouseButton(0)) || Input.touchCount == 1) && (!EventSystem.current.IsPointerOverGameObject() || m_resultRayCast.m_isDefinited)
+                                                                               && m_shuffleCoroutine == null && m_winCoroutine == null && m_lockSliceCoroutine == null)
         {
             UpdateSliceControl();
         }
@@ -268,9 +270,9 @@ public class Rubikscube : MonoBehaviour
                 UnselectRubbixSlice();
             }
 
-            if ((Input.GetMouseButton(1) || Input.touchCount > 1))
+            if ((!m_useMobileInput && Input.GetMouseButton(1)) || Input.touchCount > 1 && m_screenIsTouch)
             {
-                Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition);
+                Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.GetTouch(0).position : (Vector2)Input.mousePosition);
                 float tempX = movement.x;
                 
                 movement.x = m_inverseYAxis ? movement.y : -movement.y;
@@ -279,8 +281,9 @@ public class Rubikscube : MonoBehaviour
                 RotateRubbixCube(movement.normalized, movement.sqrMagnitude);
             }
         }
-        
-        m_lastCursorPos = m_useMobileInput ? Input.touches[0].position : (Vector2)Input.mousePosition;
+
+        m_screenIsTouch = Input.touchCount > 0;
+        m_lastCursorPos = m_useMobileInput ? m_screenIsTouch ? Input.GetTouch(0).position : m_lastCursorPos : (Vector2)Input.mousePosition;
     }
 
     public void SetSizeAndReinit(float size)
@@ -326,7 +329,8 @@ public class Rubikscube : MonoBehaviour
         //Rotated slice of rubbix cube if is it selected
         if (m_resultRayCast.m_isDefinited == true)
         {
-            Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.touches[/*indexTouche*/ 0].position : (Vector2)Input.mousePosition);
+            Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.GetTouch(0).position : (Vector2)
+            Input.mousePosition);
             if (movement.sqrMagnitude >= m_rangeMouseMovement * m_rangeMouseMovement)
             {
                 float dotProduct = 0.0f;
@@ -368,7 +372,8 @@ public class Rubikscube : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1000))
             {
-                m_lastCursorPos = Input.mousePosition;
+                m_lastCursorPos = m_lastCursorPos - (m_useMobileInput ? Input.GetTouch(0).position : (Vector2)
+                    Input.mousePosition);
                 //Get the cube which is hit and the Rubick's cube's normal
                 GameObject parent = hit.collider.gameObject.transform.parent.gameObject;
                 m_resultRayCast.m_normalFace = transform.worldToLocalMatrix * hit.normal;
