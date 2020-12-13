@@ -14,6 +14,11 @@ public class TextSliderLink : MonoBehaviour
         m_text = GetComponent<Text>();
     }
 
+    public void SetTextWithRoundFloat (float sliderValue)
+    {
+        m_text.text = System.Math.Round(sliderValue, 1).ToString();
+    }
+    
     public void SetTextWithFloat (float sliderValue)
     {
         m_text.text = sliderValue.ToString();

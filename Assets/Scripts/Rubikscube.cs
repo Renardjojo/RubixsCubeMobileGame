@@ -288,6 +288,11 @@ public class Rubikscube : MonoBehaviour
         m_width = m_heigth = m_depth = (int)size;
         Init();
     }
+
+    public void Restart()
+    {
+        Init();
+    }
     
     void UnselectRubbixSlice()
     {
