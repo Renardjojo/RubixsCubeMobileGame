@@ -536,6 +536,29 @@ public class Rubikscube : MonoBehaviour
             return row;
         }
         
+        if (normal == Vector3.forward)
+        {
+            int indexFace = index % sizeRubiksCube;
+            if (indexFace % m_width != 0)
+                indexFace -= indexFace % m_width;
+            
+            int inc = 0;
+            for (int i = indexFace; i < m_cubes.Count; i++)
+            {
+                if (i % m_width == 0 && i != indexFace && i + sizeRubiksCube - m_width < m_cubes.Count)
+                    i += sizeRubiksCube - m_width;
+
+                inc += 1;
+            
+                if (inc > m_depth * m_width)
+                    return row;
+            
+                row.Add(m_cubes[i]);
+            }
+
+            return row;
+        }
+        
         int increment = 0;
         int indexFirstFace = index < sizeRubiksCube ? index / m_width * m_heigth: (index % (sizeRubiksCube) - 1) / m_width * m_width;
         for (int i = indexFirstFace; i < m_cubes.Count; i++)

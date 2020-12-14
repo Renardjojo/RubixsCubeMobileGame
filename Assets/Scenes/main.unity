@@ -2480,11 +2480,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Credit :
-
-    Melie Chopin
-
-    Six Jonathan'
+  m_Text: "Credit :\nM\xE9lie Chopin\nSix Jonathan"
 --- !u!222 &910628159
 CanvasRenderer:
   m_ObjectHideFlags: 0
