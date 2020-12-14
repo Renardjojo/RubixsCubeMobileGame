@@ -384,21 +384,15 @@ public class Rubikscube : MonoBehaviour
                 m_resultRayCast.m_column = m_selectedSlice;
                 m_resultRayCast.m_normalColumn = GetSelectedPlane().normal;
                 
+                
                 //Get Row Slice to have the plane
                 m_selectedSlice = GetRow(indexFace, m_resultRayCast.m_normalFace);
                 m_resultRayCast.m_row = m_selectedSlice;
                 m_resultRayCast.m_normalRow = GetSelectedPlane().normal;
                 
+                Debug.Log(m_resultRayCast.m_normalFace.ToString());
                 
-                //DEBUG
-                for (int i = 0; i < m_selectedSlice.Count && m_drawSelectedCube; i++)
-                {
-                    for (int j = 0; j < 6; j++)
-                    {
-                        GameObject face = m_selectedSlice[i].transform.GetChild(j).gameObject;
-                        face.GetComponent<Renderer>().material = m_debugSelectedMaterial;
-                    }
-                }
+                
 
                 m_toucheIndicatorDebug.transform.position = hit.point;
                 m_resultRayCast.m_isDefinited = true;
@@ -541,31 +535,7 @@ public class Rubikscube : MonoBehaviour
             }
             return row;
         }
-
-        if (normal == Vector3.forward)
-        {
-            int indexFace = index % 16;
-            if (indexFace % 4 != 0)
-                indexFace -= indexFace % 4;
-            
-            int inc = 0;
-            for (int i = indexFace; i < m_cubes.Count; i++)
-            {
-                if (i % m_width == 0 && i != indexFace && i + sizeRubiksCube - m_width < m_cubes.Count)
-                    i += sizeRubiksCube - m_width;
-
-                inc += 1;
-            
-                if (inc > m_depth * m_width)
-                    return row;
-            
-                row.Add(m_cubes[i]);
-            }
-
-            return row;
-        }
-
-
+        
         int increment = 0;
         int indexFirstFace = index < sizeRubiksCube ? index / m_width * m_heigth: (index % (sizeRubiksCube) - 1) / m_width * m_width;
         for (int i = indexFirstFace; i < m_cubes.Count; i++)
