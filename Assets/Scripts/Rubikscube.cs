@@ -212,8 +212,6 @@ public class Rubikscube : MonoBehaviour
                         Instantiate(m_UnitPlaneNegZPrefab).transform.SetParent(m_cubes.Last().transform, false);
                     else if (k == m_depth - 1)
                         Instantiate(m_UnitPlaneZPrefab).transform.SetParent(m_cubes.Last().transform, false);
-
-                    
                 }
             }
         }
@@ -320,6 +318,7 @@ public class Rubikscube : MonoBehaviour
     void RotateRubbixCube(Vector3 axis, float deltaMovementInPixel)
     {
         transform.rotation = Quaternion.AngleAxis(deltaMovementInPixel * m_rubbixRotInDegByPixel, axis) * transform.rotation;
+        RefreachPrecisionPlane();
     }
 
     void UpdateSliceControl()
@@ -392,8 +391,6 @@ public class Rubikscube : MonoBehaviour
                 
                 Debug.Log(m_resultRayCast.m_normalFace.ToString());
                 
-                
-
                 m_toucheIndicatorDebug.transform.position = hit.point;
                 m_resultRayCast.m_isDefinited = true;
             }
@@ -614,7 +611,7 @@ public class Rubikscube : MonoBehaviour
 
     Plane GetSelectedPlane()
     {
-        const float distEpsilon = 0.01f; 
+        const float distEpsilon = 0.2f; 
         bool isFound;
         foreach (Plane plane in m_listPlane)
         {
@@ -642,6 +639,29 @@ public class Rubikscube : MonoBehaviour
         
         Debug.Log("Cannot found plane");
         return new Plane();
+    }
+
+    void RefreachPrecisionPlane()
+    {
+        Vector3 up = transform.up;
+        Vector3 right = transform.right;
+        Vector3 forward = transform.forward;
+        
+        m_listPlane.ForEach(delegate(Plane plane)
+        {
+            if (Vector3.Dot(plane.normal, up) > 0.5f)
+            {
+                plane.normal = up;
+            }
+            else if (Vector3.Dot(plane.normal, right) > 0.5f)
+            {
+                plane.normal = right;
+            }
+            else
+            {
+                plane.normal = forward;
+            } 
+        });
     }
     
     List<GameObject> GetSelectedCubeWithPlane(Plane plane)
@@ -778,8 +798,6 @@ public class Rubikscube : MonoBehaviour
             
             UpdateFaceLocation();
         }
-        
-
         
         m_shuffleCoroutine = null;
         yield break;

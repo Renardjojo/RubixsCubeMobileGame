@@ -1198,7 +1198,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Rubbix's cube
+  m_Text: Rubbix's chill
 --- !u!222 &456039206
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1512,7 +1512,7 @@ MonoBehaviour:
   m_rubbixSliceRotInDegByPixel: 0.01
   m_inverseYAxis: 0
   m_inverseXAxis: 0
-  m_useMobileInput: 1
+  m_useMobileInput: 0
   m_shuffleRotInDegBySec: 1000
   m_winRotationAxis: {x: 1, y: 1, z: 1}
   m_winRotationSpeedInDegBySec: 30
@@ -4480,9 +4480,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_musicContainer:
-  - {fileID: 8300000, guid: 3d67ac7eb1966554d9679d8b5795e4a7, type: 3}
-  - {fileID: 8300000, guid: 44484a754254cf54faf62878b6511b30, type: 3}
   - {fileID: 8300000, guid: 33f43ce16a269a9468dc7c7a1731f0ed, type: 3}
+  - {fileID: 8300000, guid: 44484a754254cf54faf62878b6511b30, type: 3}
+  - {fileID: 8300000, guid: 3d67ac7eb1966554d9679d8b5795e4a7, type: 3}
 --- !u!1 &1400924819
 GameObject:
   m_ObjectHideFlags: 0
@@ -5448,9 +5448,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 314379086}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
+  m_MaxValue: 1000
   m_WholeNumbers: 1
-  m_Value: 50
+  m_Value: 1000
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
