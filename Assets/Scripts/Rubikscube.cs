@@ -89,17 +89,17 @@ public class Rubikscube : MonoBehaviour
 
         [Header("Suffle Event")]
         [SerializeField] private float m_shuffleRotInDegBySec = 90f;
-        private Coroutine m_shuffleCoroutine;
+        private Coroutine m_shuffleCoroutine = null;
 
     [Header("Win Event")]
         [SerializeField] private Vector3 m_winRotationAxis;
         [SerializeField] private float m_winRotationSpeedInDegBySec;
         [SerializeField] private UnityEvent m_onPlayerWin;
-        private Coroutine m_winCoroutine;
+        private Coroutine m_winCoroutine = null;
     
     [Header("Lock slice setting")]
         [SerializeField] private float m_lockSliceRotationSpeedInDegBySec;
-        private Coroutine m_lockSliceCoroutine;
+        private Coroutine m_lockSliceCoroutine = null;
     
 #if UNITY_EDITOR
     [Header("Debug")]
@@ -114,7 +114,7 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private float m_resolutionRotInDegBySec = 90f;
         private Stack<StepResolution> m_resolutionSteps;
         private int currentPlaneSelectedID = -1;
-        private Coroutine m_solveCoroutine;
+        private Coroutine m_solveCoroutine = null;
     
     public int sizeRubiksCube
     {
@@ -269,14 +269,6 @@ public class Rubikscube : MonoBehaviour
         
         m_screenIsTouch = Input.touchCount > 0;
         
-#if UNITY_EDITOR
-        m_lastCursorPos = m_useMobileInput ? m_screenIsTouch ? Input.GetTouch(0).position : m_lastCursorPos : (Vector2)Input.mousePosition;
-#elif UNITY_STANDALONE
-    m_lastCursorPos = (Vector2)Input.mousePosition
-#else
-    m_lastCursorPos = Input.GetTouch(0).position : m_lastCursorPos
-#endif
-        
         //Init default value
         m_lastCursorPos = Vector2.zero;
         m_resultRayCast = new ResultRayCast();
@@ -341,13 +333,6 @@ public class Rubikscube : MonoBehaviour
         m_screenIsTouch = Input.touchCount > 0;
         m_lastCursorPos = m_screenIsTouch ? Input.GetTouch(0).position : m_lastCursorPos;
 #endif
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            RefreachPrescisionCube();
-            Debug.Log("Refreach");
-        }
-        
     }
 
     public void SetSizeAndReinit(float size)
@@ -442,14 +427,6 @@ public class Rubikscube : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1000))
             {
-#if UNITY_EDITOR
-                m_lastCursorPos = m_lastCursorPos - (m_useMobileInput ? Input.GetTouch(0).position : (Vector2)Input.mousePosition);
-#elif UNITY_STANDALONE
-                m_lastCursorPos = m_lastCursorPos - (Vector2)Input.mousePosition;
-#else
-                m_lastCursorPos = m_lastCursorPos - Input.GetTouch(0).position;
-#endif
-                
                 //Get the cube which is hit and the Rubick's cube's normal
                 GameObject parent = hit.collider.gameObject.transform.parent.gameObject;
                 m_resultRayCast.m_normalFace = transform.worldToLocalMatrix * hit.normal;
@@ -475,7 +452,8 @@ public class Rubikscube : MonoBehaviour
 
     void RotateSlice(List<GameObject> slice, float deltaMovementInPixel)
     {
-        Vector3 axis = (m_shuffleCoroutine != null ||  m_solveCoroutine != null ) ? transform.TransformVector(m_selectedPlane
+        Vector3 axis = (m_shuffleCoroutine != null ||  m_solveCoroutine != null || m_lockSliceCoroutine != null) ? 
+        transform.TransformVector(m_selectedPlane
         .normal) : m_selectedPlane
         .normal;
         
@@ -522,9 +500,9 @@ public class Rubikscube : MonoBehaviour
 
     void FillSliceVoidWithNeutralPlane()
     {
-        Vector3 axis = (m_shuffleCoroutine != null ||  m_solveCoroutine != null ) ? transform.TransformVector(m_selectedPlane.normal) : m_selectedPlane
+        Vector3 axis = (m_shuffleCoroutine != null ||  m_solveCoroutine != null || m_lockSliceCoroutine != null) ? transform.TransformVector(m_selectedPlane.normal) : m_selectedPlane
             .normal;
-        
+
         if (m_selectedPlane.distance < (0.5f * m_width - 0.5f))
         {
             m_NeutralPlaneRubbix2.SetActive(true);
@@ -728,7 +706,7 @@ public class Rubikscube : MonoBehaviour
         } while (loopOnceIfPlaneNotFound);
         
         Debug.LogError("Cube still corrupted after plane and cube refreach");
-        Restart();
+        //Restart();
         
         return new Plane();
     }
@@ -825,7 +803,7 @@ public class Rubikscube : MonoBehaviour
 
     IEnumerator SmoothSliceRotationCorroutine(List<GameObject> slice, float rotation, float angularSpeedInDegBySec)
     {
-        yield return MultipleSliceRotationSequence(slice, rotation, m_rubbixSliceRotInDegByPixel);
+        yield return MultipleSliceRotationSequence(slice, rotation, angularSpeedInDegBySec);
         
         m_selectedPlane = new Plane(Vector3.zero, 0f);
         m_selectedSlice = null;
@@ -864,17 +842,17 @@ public class Rubikscube : MonoBehaviour
         {
             FillSliceVoidWithNeutralPlane();
             
-            currentRot += m_shuffleRotInDegBySec * Time.deltaTime;
+            currentRot += angularSpeedInDegBySec * Time.deltaTime;
             
             float movementInPixel;
             if (currentRot > rotation)
             {
-                movementInPixel = ((m_shuffleRotInDegBySec * Time.deltaTime) - (currentRot - rotation)) /
+                movementInPixel = ((angularSpeedInDegBySec * Time.deltaTime) - (currentRot - rotation)) /
                                   m_rubbixSliceRotInDegByPixel;
             }
             else
             {
-                movementInPixel = m_shuffleRotInDegBySec * Time.deltaTime /
+                movementInPixel = angularSpeedInDegBySec * Time.deltaTime /
                                   m_rubbixSliceRotInDegByPixel;
             }
                 

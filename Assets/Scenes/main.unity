@@ -1630,15 +1630,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-  m_lockSliceRotationSpeedInDegBySec: 180
+  m_lockSliceRotationSpeedInDegBySec: 2
   m_planePrefab: {fileID: 899258389675698689, guid: f0fc80c965f919b4c9b7bccf78680887,
     type: 3}
   m_drawPlane: 0
   m_drawSelectedPlane: 0
-  m_drawSelectedCube: 0
   m_toucheIndicatorDebug: {fileID: 1404966286}
-  m_debugSelectedMaterial: {fileID: 2100000, guid: 21a8acd45e935e84d985fb01b393216f,
-    type: 2}
   m_resolutionRotInDegBySec: 90
 --- !u!4 &550698974
 Transform:
