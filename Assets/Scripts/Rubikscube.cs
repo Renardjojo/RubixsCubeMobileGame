@@ -71,7 +71,7 @@ public class Rubikscube : MonoBehaviour
         //The slice of rubbix that is selected
         private List<GameObject> m_selectedSlice;
         private Plane m_selectedPlane;
-        private float m_sliceDeltaAngle = 0f;
+        private float m_sliceDeltaAngle;
 
     [Header("Input Setting")]
     //This value will be multiplicate by the length of the cursor movement when all the rubbix cube is rotate
@@ -79,9 +79,9 @@ public class Rubikscube : MonoBehaviour
         [SerializeField] private float m_rubbixSliceRotInDegByPixel = 0.01f;
 
         [SerializeField] private bool m_inverseYAxis = true;
-        [SerializeField] private bool m_inverseXAxis = false;
+        [SerializeField] private bool m_inverseXAxis;
 #if UNITY_EDITOR
-        [SerializeField] private bool m_useMobileInput = false;
+        [SerializeField] private bool m_useMobileInput;
 #endif
     
 #if UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
@@ -306,19 +306,18 @@ public class Rubikscube : MonoBehaviour
             } else
             
 #if UNITY_EDITOR
-            if ((!m_useMobileInput && Input.GetMouseButton(1)) || Input.touchCount > 1 && m_screenIsTouch && m_lockSliceCoroutine == null)
+            if (m_lockSliceCoroutine == null && (!m_useMobileInput && Input.GetMouseButton(1)) || Input.touchCount > 1 && m_screenIsTouch)
             {
                 Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.GetTouch(0).position : (Vector2)Input.mousePosition);
 #elif UNITY_STANDALONE
-            if (Input.GetMouseButton(1) && m_lockSliceCoroutine == null)
+            if (m_lockSliceCoroutine == null && Input.GetMouseButton(1))
             {
                 Vector2 movement = m_lastCursorPos - (Vector2)Input.mousePosition;
 #else
-            if (Input.touchCount > 1 && m_screenIsTouch && m_lockSliceCoroutine == null)
+            if (m_lockSliceCoroutine == null && Input.touchCount > 1 && m_screenIsTouch)
             {
                 Vector2 movement = m_lastCursorPos - Input.GetTouch(0).position;
 #endif
-                Debug.Log(m_lockSliceCoroutine == null);
                 float tempX = movement.x;
                 
                 movement.x = m_inverseYAxis ? movement.y : -movement.y;
@@ -456,7 +455,7 @@ public class Rubikscube : MonoBehaviour
 
     void RotateSlice(List<GameObject> slice, float deltaMovementInPixel)
     {
-        Vector3 axis = (m_shuffleCoroutine != null ||  m_solveCoroutine != null || m_lockSliceCoroutine != null) ? 
+        Vector3 axis = (m_shuffleCoroutine != null ||  m_solveCoroutine != null) ? 
         transform.TransformVector(m_selectedPlane
         .normal) : m_selectedPlane
         .normal;
@@ -504,7 +503,7 @@ public class Rubikscube : MonoBehaviour
 
     void FillSliceVoidWithNeutralPlane()
     {
-        Vector3 axis = (m_shuffleCoroutine != null ||  m_solveCoroutine != null || m_lockSliceCoroutine != null) ? transform.TransformVector(m_selectedPlane.normal) : m_selectedPlane
+        Vector3 axis = (m_shuffleCoroutine != null ||  m_solveCoroutine != null) ? transform.TransformVector(m_selectedPlane.normal) : m_selectedPlane
             .normal;
 
         if (m_selectedPlane.distance < (0.5f * m_width - 0.5f))
@@ -710,7 +709,7 @@ public class Rubikscube : MonoBehaviour
         } while (loopOnceIfPlaneNotFound);
         
         Debug.LogError("Cube still corrupted after plane and cube refreach");
-        //Restart();
+        Restart();
         
         return new Plane();
     }
@@ -809,7 +808,7 @@ public class Rubikscube : MonoBehaviour
     {
         yield return MultipleSliceRotationSequence(slice, rotation, angularSpeedInDegBySec);
         
-        m_selectedPlane = new Plane(Vector3.zero, 0f);
+        m_selectedPlane = new Plane();
         m_selectedSlice = null;
 
         if (CheckIfPlayerWin())

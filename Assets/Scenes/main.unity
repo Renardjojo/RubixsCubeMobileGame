@@ -1630,7 +1630,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-  m_lockSliceRotationSpeedInDegBySec: 10
+  m_lockSliceRotationSpeedInDegBySec: 180
   m_planePrefab: {fileID: 899258389675698689, guid: f0fc80c965f919b4c9b7bccf78680887,
     type: 3}
   m_drawPlane: 0
