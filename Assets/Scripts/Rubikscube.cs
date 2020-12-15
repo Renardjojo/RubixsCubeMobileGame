@@ -83,7 +83,8 @@ public class Rubikscube : MonoBehaviour
 #if UNITY_EDITOR
         [SerializeField] private bool m_useMobileInput = false;
 #endif
-#if UNITY_IOS || UNITY_ANDROID
+    
+#if UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
         private bool m_screenIsTouch = false;
 #endif        
 
@@ -267,7 +268,9 @@ public class Rubikscube : MonoBehaviour
         
         m_resultRayCast.m_isDefinited = false;
         
+#if UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
         m_screenIsTouch = Input.touchCount > 0;
+#endif
         
         //Init default value
         m_lastCursorPos = Vector2.zero;
