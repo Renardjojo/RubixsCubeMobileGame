@@ -191,10 +191,7 @@ public class Rubikscube : MonoBehaviour
         m_NeutralPlaneSlice1.transform.localScale = 
         m_NeutralPlaneSlice2.transform.localScale = new Vector3(m_width, m_heigth, m_depth);
         
-        m_NeutralPlaneRubbix1.gameObject.SetActive(false);
-        m_NeutralPlaneRubbix2.gameObject.SetActive(false);
-        m_NeutralPlaneSlice1.gameObject.SetActive(false);
-        m_NeutralPlaneSlice2.gameObject.SetActive(false);
+        DisableAllGrayFace();
         
         m_cubes = new List<GameObject>();
         m_listPlane = new List<Plane>();
@@ -364,8 +361,8 @@ public class Rubikscube : MonoBehaviour
             rotationTodo += 90f;
         else if (m_sliceDeltaAngle < -45f)
             rotationTodo -= 90f;
-
-        m_resolutionSteps.Push(new StepResolution(-rotationTodo, currentPlaneSelectedID));
+ 
+        m_resolutionSteps.Push(new StepResolution(-(m_sliceDeltaAngle + rotationTodo), currentPlaneSelectedID));
         m_lockSliceCoroutine = StartCoroutine(SmoothSliceRotationCorroutine(m_selectedSlice, rotationTodo, m_lockSliceRotationSpeedInDegBySec));
 
         m_sliceDeltaAngle = 0f;
@@ -835,7 +832,14 @@ public class Rubikscube : MonoBehaviour
             m_solveCoroutine = StartCoroutine(SolveCorroutine());
         }
     }
-    
+
+    void DisableAllGrayFace()
+    {
+        m_NeutralPlaneRubbix1.gameObject.SetActive(false);
+        m_NeutralPlaneRubbix2.gameObject.SetActive(false);
+        m_NeutralPlaneSlice1.gameObject.SetActive(false);
+        m_NeutralPlaneSlice2.gameObject.SetActive(false);
+    }
     
     IEnumerator SolveCorroutine()
     {
@@ -846,6 +850,8 @@ public class Rubikscube : MonoBehaviour
             StepResolution stepResolutionData = m_resolutionSteps.Pop();
             m_selectedPlane = m_listPlane[stepResolutionData.planeID];
             float rotation = stepResolutionData.angle;
+            int rotationSign = rotation < 0f ? -1 : 1;
+            rotation = Mathf.Abs(rotation);
 
             List<GameObject> cubesToMove = GetSelectedCubeWithPlane(m_selectedPlane);
             
@@ -866,15 +872,12 @@ public class Rubikscube : MonoBehaviour
                                       m_rubbixSliceRotInDegByPixel;
                 }
                 
-                RotateSlice(cubesToMove, movementInPixel);
+                RotateSlice(cubesToMove, movementInPixel * rotationSign);
 
                 yield return null;
             } while (currentRot < rotation);
             
-            m_NeutralPlaneRubbix1.gameObject.SetActive(false);
-            m_NeutralPlaneRubbix2.gameObject.SetActive(false);
-            m_NeutralPlaneSlice1.gameObject.SetActive(false);
-            m_NeutralPlaneSlice2.gameObject.SetActive(false);
+            DisableAllGrayFace();
             
             UpdateFaceLocation();
         }
@@ -899,9 +902,10 @@ public class Rubikscube : MonoBehaviour
         {
             int planID = Random.Range(0, m_listPlane.Count);
             m_selectedPlane = m_listPlane[planID];
-            float rotation = Random.Range(1, 4) * 90f * (2f * Random.Range(0, 2) + 1f); //hack that convert bool to sign
-            
-            m_resolutionSteps.Push( new StepResolution(-rotation, planID));
+            float rotation = Random.Range(1, 4) * 90f;
+            int rotationSign = Random.Range(0, 2) == 0 ? -1 : 1;
+
+            m_resolutionSteps.Push( new StepResolution(-rotation * rotationSign, planID));
             
             List<GameObject> cubesToMove = GetSelectedCubeWithPlane(m_selectedPlane);
             
@@ -922,15 +926,12 @@ public class Rubikscube : MonoBehaviour
                                       m_rubbixSliceRotInDegByPixel;
                 }
                 
-                RotateSlice(cubesToMove, movementInPixel);
+                RotateSlice(cubesToMove, movementInPixel * rotationSign);
 
                 yield return null;
             } while (currentRot < rotation);
             
-            m_NeutralPlaneRubbix1.gameObject.SetActive(false);
-            m_NeutralPlaneRubbix2.gameObject.SetActive(false);
-            m_NeutralPlaneSlice1.gameObject.SetActive(false);
-            m_NeutralPlaneSlice2.gameObject.SetActive(false);
+            DisableAllGrayFace();
             
             UpdateFaceLocation();
         }
