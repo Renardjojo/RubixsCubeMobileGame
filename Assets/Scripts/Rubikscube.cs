@@ -58,6 +58,7 @@ public class Rubikscube : MonoBehaviour
     
         //The list of subcube that rubbixcube contain
         private List<GameObject> m_cubes;
+        private List<GameObject> m_unsortedCubes;
         
         //The list of plane for each horizontal and vertical rotation
         private List<Plane> m_listPlane;
@@ -194,6 +195,7 @@ public class Rubikscube : MonoBehaviour
         DisableAllGrayFace();
         
         m_cubes = new List<GameObject>();
+        m_unsortedCubes = new List<GameObject>();
         m_listPlane = new List<Plane>();
         m_selectedSlice = new List<GameObject>();
         
@@ -204,6 +206,7 @@ public class Rubikscube : MonoBehaviour
         
         //Init the subcube of rubbixcube
         m_cubes.Capacity = m_heigth * m_width * m_depth;
+        m_unsortedCubes.Capacity = m_cubes.Capacity;
         
         float halfdepth = (m_depth - 1) / 2f;
         float halfHeigth = (m_heigth - 1) / 2f;
@@ -218,8 +221,9 @@ public class Rubikscube : MonoBehaviour
                     m_cubes.Add(Instantiate(m_voidCubePrefab, new Vector3(i - halfWidth, j - halfHeigth, k - halfdepth), 
                     Quaternion.identity));
 
+                    m_unsortedCubes.Add(m_cubes.Last());
                     m_cubes.Last().transform.SetParent(gameObject.transform);
-                    
+
                     if (i == 0)
                         Instantiate(m_UnitPlaneNegXPrefab).transform.SetParent(m_cubes.Last().transform, false);
                     else if (i == m_width - 1)
@@ -279,7 +283,6 @@ public class Rubikscube : MonoBehaviour
         m_selectedPlane = new Plane(Vector3.zero, 0f);
         m_sliceDeltaAngle = 0f;
     }
-    
 
     // Update is called once per frame
     void Update()
@@ -338,6 +341,13 @@ public class Rubikscube : MonoBehaviour
         m_screenIsTouch = Input.touchCount > 0;
         m_lastCursorPos = m_screenIsTouch ? Input.GetTouch(0).position : m_lastCursorPos;
 #endif
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            RefreachPrescisionCube();
+            Debug.Log("Refreach");
+        }
+        
     }
 
     public void SetSizeAndReinit(float size)
@@ -679,36 +689,69 @@ public class Rubikscube : MonoBehaviour
     {
         const float distEpsilon = 0.2f; 
         bool isFound;
+        bool loopOnceIfPlaneNotFound = true;
 
-        for (int idPlane = 0; idPlane < m_listPlane.Count; idPlane++)
+        do
         {
-            isFound = true;
-
-            Plane globalPlane = new Plane(transform.TransformPoint(m_listPlane[idPlane].normal), m_listPlane[idPlane].distance);
-
-            foreach (var faceGO in m_selectedSlice)
+            for (int idPlane = 0; idPlane < m_listPlane.Count; idPlane++)
             {
-                if (Mathf.Abs(globalPlane.GetDistanceToPoint(faceGO.transform.position)) > distEpsilon)
+                isFound = true;
+
+                Plane globalPlane = new Plane(transform.TransformPoint(m_listPlane[idPlane].normal),
+                    m_listPlane[idPlane].distance);
+
+                foreach (var faceGO in m_selectedSlice)
                 {
-                    isFound = false;
-                    break;
+                    if (Mathf.Abs(globalPlane.GetDistanceToPoint(faceGO.transform.position)) > distEpsilon)
+                    {
+                        isFound = false;
+                        break;
+                    }
+                }
+
+                if (isFound)
+                {
+#if UNITY_EDITOR
+                    if (m_drawSelectedPlane)
+                        drawDebugPlane(globalPlane);
+#endif
+                    currentPlaneSelectedID = idPlane;
+                    return globalPlane;
                 }
             }
 
-            if (isFound)
-            {
-#if UNITY_EDITOR
-                if (m_drawSelectedPlane)
-                    drawDebugPlane(globalPlane);
-#endif
+            loopOnceIfPlaneNotFound = false;
+            RefreachPrescisionCube();
+            RefreachPrecisionPlane();
+            Debug.LogWarning("Cube or plane corruption");
 
-                currentPlaneSelectedID = idPlane;
-                return globalPlane;
+        } while (loopOnceIfPlaneNotFound);
+        
+        Debug.LogError("Cube still corrupted after plane and cube refreach");
+        Restart();
+        
+        return new Plane();
+    }
+
+    void RefreachPrescisionCube()
+    {
+        float halfdepth = (m_depth - 1) / 2f;
+        float halfHeigth = (m_heigth - 1) / 2f;
+        float halfWidth = (m_width - 1 )/ 2f;
+
+        for (int k = 0; k < m_depth; k++)
+        {
+            for (int j = 0; j < m_heigth; j++)
+            {
+                for (int i = 0; i < m_width; i++)
+                {
+                    Transform cubeTransform = m_unsortedCubes[i + j * m_width + k * m_heigth * m_width].transform;
+                    cubeTransform.localRotation.Normalize();
+                    cubeTransform.transform.localPosition = cubeTransform.transform.localRotation * new Vector3(i - 
+                    halfWidth, j - halfHeigth, k - halfdepth);
+                }
             }
         }
-        
-        Debug.Log("Cannot found plane");
-        return new Plane();
     }
 
     void RefreachPrecisionPlane()
@@ -876,7 +919,7 @@ public class Rubikscube : MonoBehaviour
         {
             int planID = Random.Range(0, m_listPlane.Count);
             m_selectedPlane = m_listPlane[planID];
-            float rotation = Random.Range(1, 4) * 90f * Random.Range(0, 2) == 0 ? -1 : 1;
+            float rotation = Random.Range(1, 4) * 90f * (Random.Range(0, 2) == 0 ? -1 : 1);
 
             m_resolutionSteps.Push( new StepResolution(-rotation, planID));
             yield return MultipleSliceRotationSequence(GetSelectedCubeWithPlane(m_selectedPlane), rotation, m_rubbixSliceRotInDegByPixel);
