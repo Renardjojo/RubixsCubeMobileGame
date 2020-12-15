@@ -338,8 +338,6 @@ public class Rubikscube : MonoBehaviour
         m_screenIsTouch = Input.touchCount > 0;
         m_lastCursorPos = m_screenIsTouch ? Input.GetTouch(0).position : m_lastCursorPos;
 #endif
-        
-
     }
 
     public void SetSizeAndReinit(float size)
@@ -784,38 +782,10 @@ public class Rubikscube : MonoBehaviour
 
     IEnumerator SmoothSliceRotationCorroutine(List<GameObject> slice, float rotation, float angularSpeedInDegBySec)
     {
-        float currentRot = 0f;
-        int rotationSign = rotation < 0f ? -1 : 1;
-        rotation = Mathf.Abs(rotation);
-        do
-        {
-            currentRot += angularSpeedInDegBySec * Time.deltaTime;
-            float movementInPixel;
-
-            if (currentRot > rotation)
-            {
-                movementInPixel = ((angularSpeedInDegBySec * Time.deltaTime) - (currentRot - rotation)) /
-                                  m_rubbixSliceRotInDegByPixel;
-            }
-            else
-            {
-                movementInPixel = angularSpeedInDegBySec * Time.deltaTime /
-                                  m_rubbixSliceRotInDegByPixel;
-            }
-
-            RotateSlice(slice, movementInPixel * rotationSign);
-
-            yield return null;
-        } while (currentRot < rotation);
+        yield return MultipleSliceRotationSequence(slice, rotation, m_rubbixSliceRotInDegByPixel);
         
         m_selectedPlane = new Plane(Vector3.zero, 0f);
         m_selectedSlice = null;
-        m_NeutralPlaneRubbix1.SetActive(false);
-        m_NeutralPlaneRubbix2.SetActive(false);
-        m_NeutralPlaneSlice1.SetActive(false);
-        m_NeutralPlaneSlice2.SetActive(false);
-        
-        UpdateFaceLocation();
 
         if (CheckIfPlayerWin())
         {
@@ -840,7 +810,40 @@ public class Rubikscube : MonoBehaviour
         m_NeutralPlaneSlice1.gameObject.SetActive(false);
         m_NeutralPlaneSlice2.gameObject.SetActive(false);
     }
-    
+
+    IEnumerator MultipleSliceRotationSequence(List<GameObject> slice, float rotation, float angularSpeedInDegBySec)
+    {
+        int rotationSign = rotation < 0f ? -1 : 1;
+        float currentRot = 0f;
+        rotation = Mathf.Abs(rotation);
+        
+        do
+        {
+            FillSliceVoidWithNeutralPlane();
+            
+            currentRot += m_shuffleRotInDegBySec * Time.deltaTime;
+            
+            float movementInPixel;
+            if (currentRot > rotation)
+            {
+                movementInPixel = ((m_shuffleRotInDegBySec * Time.deltaTime) - (currentRot - rotation)) /
+                                  m_rubbixSliceRotInDegByPixel;
+            }
+            else
+            {
+                movementInPixel = m_shuffleRotInDegBySec * Time.deltaTime /
+                                  m_rubbixSliceRotInDegByPixel;
+            }
+                
+            RotateSlice(slice, movementInPixel * rotationSign);
+
+            yield return null;
+        } while (currentRot < rotation);
+        
+        DisableAllGrayFace();
+        UpdateFaceLocation();
+    }
+
     IEnumerator SolveCorroutine()
     {
         transform.rotation = Quaternion.identity;
@@ -849,41 +852,12 @@ public class Rubikscube : MonoBehaviour
         {
             StepResolution stepResolutionData = m_resolutionSteps.Pop();
             m_selectedPlane = m_listPlane[stepResolutionData.planeID];
-            float rotation = stepResolutionData.angle;
-            int rotationSign = rotation < 0f ? -1 : 1;
-            rotation = Mathf.Abs(rotation);
 
-            List<GameObject> cubesToMove = GetSelectedCubeWithPlane(m_selectedPlane);
-            
-            float currentRot = 0f;
-            do
-            {
-                FillSliceVoidWithNeutralPlane();
-                currentRot += m_shuffleRotInDegBySec * Time.deltaTime;
-                float movementInPixel;
-                if (currentRot > rotation)
-                {
-                    movementInPixel = ((m_shuffleRotInDegBySec * Time.deltaTime) - (currentRot - rotation)) /
-                                      m_rubbixSliceRotInDegByPixel;
-                }
-                else
-                {
-                    movementInPixel = m_shuffleRotInDegBySec * Time.deltaTime /
-                                      m_rubbixSliceRotInDegByPixel;
-                }
-                
-                RotateSlice(cubesToMove, movementInPixel * rotationSign);
-
-                yield return null;
-            } while (currentRot < rotation);
-            
-            DisableAllGrayFace();
-            
-            UpdateFaceLocation();
+            yield return MultipleSliceRotationSequence(GetSelectedCubeWithPlane(m_selectedPlane), stepResolutionData
+            .angle, m_resolutionRotInDegBySec);
         }
         
         m_solveCoroutine = null;
-        yield break;
     }
     
     public void Shuffle(float depth)
@@ -902,42 +876,13 @@ public class Rubikscube : MonoBehaviour
         {
             int planID = Random.Range(0, m_listPlane.Count);
             m_selectedPlane = m_listPlane[planID];
-            float rotation = Random.Range(1, 4) * 90f;
-            int rotationSign = Random.Range(0, 2) == 0 ? -1 : 1;
+            float rotation = Random.Range(1, 4) * 90f * Random.Range(0, 2) == 0 ? -1 : 1;
 
-            m_resolutionSteps.Push( new StepResolution(-rotation * rotationSign, planID));
-            
-            List<GameObject> cubesToMove = GetSelectedCubeWithPlane(m_selectedPlane);
-            
-            float currentRot = 0f;
-            do
-            {
-                FillSliceVoidWithNeutralPlane();
-                currentRot += m_shuffleRotInDegBySec * Time.deltaTime;
-                float movementInPixel;
-                if (currentRot > rotation)
-                {
-                    movementInPixel = ((m_shuffleRotInDegBySec * Time.deltaTime) - (currentRot - rotation)) /
-                                      m_rubbixSliceRotInDegByPixel;
-                }
-                else
-                {
-                    movementInPixel = m_shuffleRotInDegBySec * Time.deltaTime /
-                                      m_rubbixSliceRotInDegByPixel;
-                }
-                
-                RotateSlice(cubesToMove, movementInPixel * rotationSign);
-
-                yield return null;
-            } while (currentRot < rotation);
-            
-            DisableAllGrayFace();
-            
-            UpdateFaceLocation();
+            m_resolutionSteps.Push( new StepResolution(-rotation, planID));
+            yield return MultipleSliceRotationSequence(GetSelectedCubeWithPlane(m_selectedPlane), rotation, m_rubbixSliceRotInDegByPixel);
         }
         
         m_shuffleCoroutine = null;
-        yield break;
     }
 
     public void WinRotateRubbixCube()
@@ -956,8 +901,5 @@ public class Rubikscube : MonoBehaviour
             yield return null;
             
         } while (true);
-
-        m_winCoroutine = null;
-        yield break;
     }
 }
