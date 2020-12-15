@@ -300,21 +300,22 @@ public class Rubikscube : MonoBehaviour
             if (m_resultRayCast.m_isDefinited)
             {
                 UnselectRubbixSlice();
-            }
+            } else
             
 #if UNITY_EDITOR
-            if ((!m_useMobileInput && Input.GetMouseButton(1)) || Input.touchCount > 1 && m_screenIsTouch)
+            if ((!m_useMobileInput && Input.GetMouseButton(1)) || Input.touchCount > 1 && m_screenIsTouch && m_lockSliceCoroutine == null)
             {
                 Vector2 movement = m_lastCursorPos - (m_useMobileInput ? Input.GetTouch(0).position : (Vector2)Input.mousePosition);
 #elif UNITY_STANDALONE
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButton(1) && m_lockSliceCoroutine == null)
             {
                 Vector2 movement = m_lastCursorPos - (Vector2)Input.mousePosition;
 #else
-            if (Input.touchCount > 1 && m_screenIsTouch)
+            if (Input.touchCount > 1 && m_screenIsTouch && m_lockSliceCoroutine == null)
             {
                 Vector2 movement = m_lastCursorPos - Input.GetTouch(0).position;
 #endif
+                Debug.Log(m_lockSliceCoroutine == null);
                 float tempX = movement.x;
                 
                 movement.x = m_inverseYAxis ? movement.y : -movement.y;
@@ -812,7 +813,6 @@ public class Rubikscube : MonoBehaviour
         {
             m_onPlayerWin?.Invoke();
         }
-        
         m_lockSliceCoroutine = null;
     }
 
