@@ -890,7 +890,7 @@ public class Rubikscube : MonoBehaviour
             else if (stepResolutionData.angle < -180f)
                 shortestAngle = angleToDo + 360f;
             else
-                shortestAngle = stepResolutionData.angle;
+                shortestAngle = angleToDo;
             
             yield return MultipleSliceRotationSequence(GetSelectedCubeWithPlane(m_selectedPlane), shortestAngle, 
             m_resolutionRotInDegBySec);
