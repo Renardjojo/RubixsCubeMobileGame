@@ -1627,6 +1627,22 @@ MonoBehaviour:
   m_UnitNeutralPlanePrefab: {fileID: 8617749556305218581, guid: ec2efd3f538b8eb418ff3600040f2efb,
     type: 3}
   m_rangeMouseMovement: 6
+  m_skins:
+  - x: {fileID: 2100000, guid: cef60a978cdbb4f429276bcf11d4a7ec, type: 2}
+    minX: {fileID: 2100000, guid: a064a359af665bd489ad1b4445e78bea, type: 2}
+    y: {fileID: 2100000, guid: 940a951133ce5ea44a0a76cf8fababc2, type: 2}
+    minY: {fileID: 2100000, guid: 4fdc3bfc63d3ad64d8c4f363fac392e2, type: 2}
+    z: {fileID: 2100000, guid: e2cb1346d6c117b4b82f3376c5c751b3, type: 2}
+    minZ: {fileID: 2100000, guid: b103ce27b81d2e2429816b0e2b4fb311, type: 2}
+    neutral: {fileID: 2100000, guid: f1ebb4a44fe16c04a83bcedc8926e6f7, type: 2}
+  - x: {fileID: 2100000, guid: 9c849642fe8189140ae8cddac9cf10ab, type: 2}
+    minX: {fileID: 2100000, guid: bbeac08a346acfd4091c3013fe95b6a6, type: 2}
+    y: {fileID: 2100000, guid: c867919c43e1494438efc6a7f7e629cf, type: 2}
+    minY: {fileID: 2100000, guid: da8e2162864d21b46b28d9ee23a5b447, type: 2}
+    z: {fileID: 2100000, guid: 89e3e771823ceb0479d4affb369ab00e, type: 2}
+    minZ: {fileID: 2100000, guid: bf4a00350b41db94f864343c58033755, type: 2}
+    neutral: {fileID: 2100000, guid: 243580eac8cafc6488630fa950efdbe4, type: 2}
+  m_currentSkin: 0
   m_rubbixRotInDegByPixel: 0.01
   m_rubbixSliceRotInDegByPixel: 0.01
   m_inverseYAxis: 0

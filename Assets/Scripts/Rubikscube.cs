@@ -33,6 +33,12 @@ public struct StepResolution
     }
 }
 
+[System.Serializable]
+struct Skin
+{
+    public Material x, minX, y, minY, z, minZ, neutral;
+}
+
 public class Rubikscube : MonoBehaviour
 {
     [Header("Rubbix cube properties")]
@@ -55,8 +61,7 @@ public class Rubikscube : MonoBehaviour
         private GameObject m_NeutralPlaneSlice2;
         
         [SerializeField] private float m_rangeMouseMovement;
-        private int m_idCurrentSkin = 0;
-    
+        
         //The list of subcube that rubbixcube contain
         private List<GameObject> m_cubes;
         private List<GameObject> m_unsortedCubes;
@@ -74,6 +79,10 @@ public class Rubikscube : MonoBehaviour
         private Plane m_selectedPlane;
         private float m_sliceDeltaAngle;
 
+    [Header("Skins")] 
+        [SerializeField] private List<Skin> m_skins;
+        [SerializeField] private int m_currentSkin;    
+        
     [Header("Input Setting")]
     //This value will be multiplicate by the length of the cursor movement when all the rubbix cube is rotate
         [SerializeField] private float m_rubbixRotInDegByPixel = 0.01f;       
@@ -243,6 +252,8 @@ public class Rubikscube : MonoBehaviour
                 }
             }
         }
+        
+        ChangeRubbixSkin(m_currentSkin);
 
         //Init plan taht reprensent the rotation horizontal and vertical
         m_listPlane.Capacity = m_heigth + m_width + m_depth;
@@ -944,18 +955,55 @@ public class Rubikscube : MonoBehaviour
 
     public void ChangeRubbixSkin()
     {
+        m_currentSkin++;
+
+        if (m_currentSkin >= m_skins.Count)
+            m_currentSkin = 0;
+        
+        ChangeRubbixSkin(m_currentSkin);
+    }
+
+    public void ChangeRubbixSkin(int newId)
+    {
+        m_currentSkin = Mathf.Clamp(newId, 0, m_skins.Count);
+
         foreach (var cube in m_cubes)
         {
             for (int i = 0; i < cube.transform.childCount; i++)
             {
                 //Can be improve but fast to write it
-                cube.transform.GetChild(i).GetComponent<MultipleMaterialSelector>().ChangeTexture();
+                switch (cube.transform.GetChild(i).tag)
+                {
+                    case "X":
+                        cube.transform.GetChild(i).GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].x;
+                        break;
+
+                    case "-X":
+                        cube.transform.GetChild(i).GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].minX;
+                        break;
+
+                    case "Y":
+                        cube.transform.GetChild(i).GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].y;
+                        break;
+
+                    case "-Y":
+                        cube.transform.GetChild(i).GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].minY;
+                        break;
+
+                    case "Z":
+                        cube.transform.GetChild(i).GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].z;
+                        break;
+
+                    case "-Z":
+                        cube.transform.GetChild(i).GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].minZ;
+                        break;
+                }
             }
         }
-        
-        m_NeutralPlaneRubbix1.GetComponent<MultipleMaterialSelector>().ChangeTexture();
-        m_NeutralPlaneRubbix2.GetComponent<MultipleMaterialSelector>().ChangeTexture();
-        m_NeutralPlaneSlice1.GetComponent<MultipleMaterialSelector>().ChangeTexture();
-        m_NeutralPlaneSlice2.GetComponent<MultipleMaterialSelector>().ChangeTexture();
+
+        m_NeutralPlaneRubbix1.GetComponent<MeshRenderer>().material = 
+            m_NeutralPlaneRubbix2.GetComponent<MeshRenderer>().material =
+                m_NeutralPlaneSlice1.GetComponent<MeshRenderer>().material =
+                    m_NeutralPlaneSlice2.GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].neutral;
     }
 }
