@@ -1951,7 +1951,7 @@ MonoBehaviour:
   m_inverseYAxis: 0
   m_inverseXAxis: 0
   m_useMobileInput: 0
-  m_shuffleRotInDegBySec: 1000
+  m_shuffleRotInDegBySec: 90
   m_winRotationAxis: {x: 1, y: 1, z: 1}
   m_winRotationSpeedInDegBySec: 30
   m_onPlayerWin:
