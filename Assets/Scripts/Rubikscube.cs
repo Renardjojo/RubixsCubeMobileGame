@@ -55,6 +55,7 @@ public class Rubikscube : MonoBehaviour
         private GameObject m_NeutralPlaneSlice2;
         
         [SerializeField] private float m_rangeMouseMovement;
+        private int m_idCurrentSkin = 0;
     
         //The list of subcube that rubbixcube contain
         private List<GameObject> m_cubes;
@@ -924,5 +925,22 @@ public class Rubikscube : MonoBehaviour
             yield return null;
             
         } while (true);
+    }
+
+    public void ChangeRubbixSkin()
+    {
+        foreach (var cube in m_cubes)
+        {
+            for (int i = 0; i < cube.transform.childCount; i++)
+            {
+                //Can be improve but fast to write it
+                cube.transform.GetChild(i).GetComponent<MultipleMaterialSelector>().ChangeTexture();
+            }
+        }
+        
+        m_NeutralPlaneRubbix1.GetComponent<MultipleMaterialSelector>().ChangeTexture();
+        m_NeutralPlaneRubbix2.GetComponent<MultipleMaterialSelector>().ChangeTexture();
+        m_NeutralPlaneSlice1.GetComponent<MultipleMaterialSelector>().ChangeTexture();
+        m_NeutralPlaneSlice2.GetComponent<MultipleMaterialSelector>().ChangeTexture();
     }
 }
