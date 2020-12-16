@@ -867,10 +867,33 @@ public class Rubikscube : MonoBehaviour
         
         while (m_resolutionSteps.Count > 0)
         {
-            StepResolution stepResolutionData = m_resolutionSteps.Pop();
-            m_selectedPlane = m_listPlane[stepResolutionData.planeID];
+            StepResolution stepResolutionData;
             
-            yield return MultipleSliceRotationSequence(GetSelectedCubeWithPlane(m_selectedPlane), stepResolutionData.angle, m_resolutionRotInDegBySec);
+            //Try to avoid to turn many time the same slice
+            float angleToDo = 0f;
+            do
+            {
+                stepResolutionData = m_resolutionSteps.Pop();
+                angleToDo += stepResolutionData.angle;
+                
+            } while (m_resolutionSteps.Count > 0 && m_resolutionSteps.Peek().planeID == stepResolutionData.planeID);
+            
+            m_selectedPlane = m_listPlane[stepResolutionData.planeID];
+            angleToDo %= 360f;
+            if (Approximately(angleToDo, 0f, 0))
+                continue;
+            
+            //Avoid unecessary rotation the fell that solve copy all movement
+            float shortestAngle;
+            if (stepResolutionData.angle > 180f)
+                shortestAngle = angleToDo - 360f;
+            else if (stepResolutionData.angle < -180f)
+                shortestAngle = angleToDo + 360f;
+            else
+                shortestAngle = stepResolutionData.angle;
+            
+            yield return MultipleSliceRotationSequence(GetSelectedCubeWithPlane(m_selectedPlane), shortestAngle, 
+            m_resolutionRotInDegBySec);
         }
         
         m_solveCoroutine = null;
