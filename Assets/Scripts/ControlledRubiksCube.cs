@@ -5,6 +5,18 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
+public struct ResultRayCast
+{
+    public Vector3 m_normalFace;
+    public bool m_isDefinited;
+    public List<GameObject> m_row;
+    public List<GameObject> m_column;
+    public Vector3 m_normalRow;
+    public Vector3 m_normalColumn;
+    public bool m_directionTurnIsDefinited;
+    public bool m_directionRowDefinited;
+}
+
 public class ControlledRubiksCube : RubiksCube
 {
     [Header("Lock slice setting")]
@@ -43,7 +55,7 @@ public class ControlledRubiksCube : RubiksCube
         [SerializeField] protected GameObject m_toucheIndicatorDebug;
 #endif
         
-    protected new void Init()
+    protected override void Init()
     {
         if (m_winCoroutine != null)
         {
@@ -290,7 +302,7 @@ public class ControlledRubiksCube : RubiksCube
         }
     }
     
-    protected new bool isCoroutineRun()
+    protected override bool isCoroutineRun()
     {
         return base.isCoroutineRun() || m_lockSliceCoroutine != null;
     }

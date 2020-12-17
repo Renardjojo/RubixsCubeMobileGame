@@ -9,18 +9,6 @@ using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-public struct ResultRayCast
-{
-    public Vector3 m_normalFace;
-    public bool m_isDefinited;
-    public List<GameObject> m_row;
-    public List<GameObject> m_column;
-    public Vector3 m_normalRow;
-    public Vector3 m_normalColumn;
-    public bool m_directionTurnIsDefinited;
-    public bool m_directionRowDefinited;
-}
-
 public struct StepResolution
 {
     public float angle;
@@ -570,6 +558,14 @@ public class RubiksCube : MonoBehaviour
         m_NeutralPlaneSlice1.gameObject.SetActive(false);
         m_NeutralPlaneSlice2.gameObject.SetActive(false);
     }
+    
+    protected void ShowNeutralFace(bool flag)
+    {
+        m_NeutralPlaneRubix1.GetComponent<MeshRenderer>().enabled =
+            m_NeutralPlaneRubix2.GetComponent<MeshRenderer>().enabled =
+                m_NeutralPlaneSlice1.GetComponent<MeshRenderer>().enabled =
+                    m_NeutralPlaneSlice2.GetComponent<MeshRenderer>().enabled = flag;
+    }
 
     protected IEnumerator MultipleSliceRotationSequence(List<GameObject> slice, float rotation, float angularSpeedInDegBySec)
     {
@@ -653,7 +649,7 @@ public class RubiksCube : MonoBehaviour
         }
     }
 
-    protected bool isCoroutineRun()
+    protected virtual bool isCoroutineRun()
     {
         return m_shuffleCoroutine != null || m_solveCoroutine != null;
     }
@@ -733,9 +729,21 @@ public class RubiksCube : MonoBehaviour
             }
         }
 
-        m_NeutralPlaneRubix1.GetComponent<MeshRenderer>().material = 
-            m_NeutralPlaneRubix2.GetComponent<MeshRenderer>().material =
-                m_NeutralPlaneSlice1.GetComponent<MeshRenderer>().material =
-                    m_NeutralPlaneSlice2.GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].neutral;
+        if (m_skins[m_currentSkin].neutral != null)
+        {
+            if (!m_NeutralPlaneRubix1.GetComponent<MeshRenderer>().enabled)
+            {
+                ShowNeutralFace(true);
+            }
+            
+            m_NeutralPlaneRubix1.GetComponent<MeshRenderer>().material =
+                m_NeutralPlaneRubix2.GetComponent<MeshRenderer>().material =
+                    m_NeutralPlaneSlice1.GetComponent<MeshRenderer>().material =
+                        m_NeutralPlaneSlice2.GetComponent<MeshRenderer>().material = m_skins[m_currentSkin].neutral;
+        }
+        else if (m_NeutralPlaneRubix1.GetComponent<MeshRenderer>().enabled)
+        {
+            ShowNeutralFace(false);
+        }
     }
 }
