@@ -127,7 +127,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 723552885}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &103654833
+--- !u!114 &103654835
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -937,6 +937,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BaseCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 207516876334231923, guid: 43e14a5f52a8bee4c880224475b605c4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 207516876334231935, guid: 43e14a5f52a8bee4c880224475b605c4,
         type: 3}
@@ -2116,6 +2121,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6435228410057204089, guid: 84b81b94d9a90ce4ea84baae8743fc81,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1640807699}
+    - target: {fileID: 6435228410057204089, guid: 84b81b94d9a90ce4ea84baae8743fc81,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetGeneralVolume
       objectReference: {fileID: 0}
     - target: {fileID: 6435228410057204090, guid: 84b81b94d9a90ce4ea84baae8743fc81,
         type: 3}
