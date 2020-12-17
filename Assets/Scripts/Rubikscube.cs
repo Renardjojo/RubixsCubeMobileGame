@@ -62,6 +62,7 @@ public class RubiksCube : MonoBehaviour
         [Header("Skins")] 
         [SerializeField] protected List<Skin> m_skins;
         [SerializeField] protected int m_currentSkin = 0;
+        [SerializeField] protected UnityEvent m_onStart;
 
     [Header("Suffle Event")]
         [SerializeField] protected float m_shuffleRotInDegBySec = 720;
@@ -92,6 +93,7 @@ public class RubiksCube : MonoBehaviour
     void Start()
     {
         Init();
+        m_onStart?.Invoke();
     }
 
     protected virtual void Init()
@@ -671,11 +673,16 @@ public class RubiksCube : MonoBehaviour
         m_shuffleCoroutine = null;
     }
 
+    public void StartInfinitRotation()
+    {
+        StartCoroutine(InfinitRotateCoroutine(Vector3.one, 30f));
+    }
+
     protected IEnumerator InfinitRotateCoroutine(Vector3 axis, float rotationSpeedInDeg)
     {
         do
         {
-            RotateRubixCube(axis, rotationSpeedInDeg * Time.deltaTime);
+            transform.rotation = Quaternion.AngleAxis(rotationSpeedInDeg * Time.deltaTime, axis) * transform.rotation;
             yield return null;
             
         } while (true);
