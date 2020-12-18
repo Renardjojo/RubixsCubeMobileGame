@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "5200630afe8b3585",
         "name": "com.DefaultCompany.RubbixsAdventure",
-        "processId": 32032,
+        "processId": 31765,
         "exited": true
     },
     "m_SelectedPriority": 0,
@@ -24,6 +24,24 @@
             "deviceId": "5200630afe8b3585",
             "name": "com.DefaultCompany.RubbixsAdventure",
             "processId": 32032,
+            "exited": true
+        },
+        {
+            "deviceId": "5200630afe8b3585",
+            "name": "com.DefaultCompany.RubbixsAdventure",
+            "processId": 24606,
+            "exited": true
+        },
+        {
+            "deviceId": "5200630afe8b3585",
+            "name": "com.DefaultCompany.RubbixsAdventure",
+            "processId": 30446,
+            "exited": false
+        },
+        {
+            "deviceId": "5200630afe8b3585",
+            "name": "com.DefaultCompany.RubbixsAdventure",
+            "processId": 31765,
             "exited": true
         }
     ],

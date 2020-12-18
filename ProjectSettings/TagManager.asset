@@ -10,6 +10,7 @@ TagManager:
   - -Y
   - Z
   - -Z
+  - Fire
   layers:
   - Default
   - TransparentFX
