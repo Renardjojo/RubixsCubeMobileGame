@@ -8,14 +8,15 @@ public class GameController : MonoBehaviour
 {
     public void Start()
     {
-        AudioListener.volume = PlayerPrefs.GetFloat("generalVolume", 0.5f);;
+        AudioListener.volume = PlayerPrefs.GetFloat("generalVolume", 0.5f);
+        QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("QualityLevel", QualitySettings.GetQualityLevel()));
     }
-
+    
     public void SavePrefs()
     {
         PlayerPrefs.Save();
     }
-
+    
     public void SetGeneralVolume(float newVolume)
     {
         AudioListener.volume = newVolume;

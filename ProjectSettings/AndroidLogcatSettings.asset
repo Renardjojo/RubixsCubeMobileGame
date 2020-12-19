@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "5200630afe8b3585",
         "name": "com.DefaultCompany.RubbixsAdventure",
-        "processId": 31765,
+        "processId": 32505,
         "exited": true
     },
     "m_SelectedPriority": 0,
@@ -42,6 +42,12 @@
             "deviceId": "5200630afe8b3585",
             "name": "com.DefaultCompany.RubbixsAdventure",
             "processId": 31765,
+            "exited": true
+        },
+        {
+            "deviceId": "5200630afe8b3585",
+            "name": "com.DefaultCompany.RubbixsAdventure",
+            "processId": 32505,
             "exited": true
         }
     ],
