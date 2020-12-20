@@ -1,0 +1,206 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5689226964345511478
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5689226964345511476}
+  - component: {fileID: 5689226964345511479}
+  - component: {fileID: 529586907496949783}
+  m_Layer: 0
+  m_Name: RubixCube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5689226964345511476
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5689226964345511478}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5689226964345511479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5689226964345511478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bb62bb2dcd4bf0468bf23413d503710, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_width: 4
+  m_heigth: 4
+  m_depth: 4
+  m_voidCubePrefab: {fileID: 6685178312622568407, guid: e8a31cc379420b64b88acbde2ba750a4,
+    type: 3}
+  m_UnitPlaneXPrefab: {fileID: 5577046370975898489, guid: 3124db1a554edfe479f3f0657aefcda4,
+    type: 3}
+  m_UnitPlaneNegXPrefab: {fileID: 2884732151676044542, guid: eae4de556b1782647b2dd3a1ce3e8c63,
+    type: 3}
+  m_UnitPlaneYPrefab: {fileID: 1088853179409961717, guid: 7d359090542449c418a10b973aa93201,
+    type: 3}
+  m_UnitPlaneNegYPrefab: {fileID: 7666140980936309944, guid: 8e95bd57f098633458c5e148fe3bd7d6,
+    type: 3}
+  m_UnitPlaneZPrefab: {fileID: 8617749556305218581, guid: e689f171e24366245907cd8be142dff3,
+    type: 3}
+  m_UnitPlaneNegZPrefab: {fileID: 4610784899934958718, guid: 9bb98b65e9d7f54448ef74bd1aaf26c2,
+    type: 3}
+  m_UnitNeutralPlanePrefab: {fileID: 8617749556305218581, guid: ec2efd3f538b8eb418ff3600040f2efb,
+    type: 3}
+  m_skins:
+  - x: {fileID: 2100000, guid: cef60a978cdbb4f429276bcf11d4a7ec, type: 2}
+    minX: {fileID: 2100000, guid: a064a359af665bd489ad1b4445e78bea, type: 2}
+    y: {fileID: 2100000, guid: 940a951133ce5ea44a0a76cf8fababc2, type: 2}
+    minY: {fileID: 2100000, guid: 4fdc3bfc63d3ad64d8c4f363fac392e2, type: 2}
+    z: {fileID: 2100000, guid: e2cb1346d6c117b4b82f3376c5c751b3, type: 2}
+    minZ: {fileID: 2100000, guid: b103ce27b81d2e2429816b0e2b4fb311, type: 2}
+    neutral: {fileID: 2100000, guid: f1ebb4a44fe16c04a83bcedc8926e6f7, type: 2}
+  - x: {fileID: 2100000, guid: cef60a978cdbb4f429276bcf11d4a7ec, type: 2}
+    minX: {fileID: 2100000, guid: a064a359af665bd489ad1b4445e78bea, type: 2}
+    y: {fileID: 2100000, guid: 940a951133ce5ea44a0a76cf8fababc2, type: 2}
+    minY: {fileID: 2100000, guid: 4fdc3bfc63d3ad64d8c4f363fac392e2, type: 2}
+    z: {fileID: 2100000, guid: e2cb1346d6c117b4b82f3376c5c751b3, type: 2}
+    minZ: {fileID: 2100000, guid: b103ce27b81d2e2429816b0e2b4fb311, type: 2}
+    neutral: {fileID: 2100000, guid: f1ebb4a44fe16c04a83bcedc8926e6f7, type: 2}
+  - x: {fileID: 2100000, guid: 9c849642fe8189140ae8cddac9cf10ab, type: 2}
+    minX: {fileID: 2100000, guid: bbeac08a346acfd4091c3013fe95b6a6, type: 2}
+    y: {fileID: 2100000, guid: c867919c43e1494438efc6a7f7e629cf, type: 2}
+    minY: {fileID: 2100000, guid: da8e2162864d21b46b28d9ee23a5b447, type: 2}
+    z: {fileID: 2100000, guid: 89e3e771823ceb0479d4affb369ab00e, type: 2}
+    minZ: {fileID: 2100000, guid: bf4a00350b41db94f864343c58033755, type: 2}
+    neutral: {fileID: 2100000, guid: 243580eac8cafc6488630fa950efdbe4, type: 2}
+  m_currentSkin: 0
+  m_shuffleRotInDegBySec: 720
+  m_winRotationAxis: {x: 1, y: 0.5, z: 1}
+  m_winRotationSpeedInDegBySec: 30
+  m_onPlayerWin:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 5689226964345511479}
+        m_MethodName: WinRotateRubbixCube
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+  m_lockSliceRotationSpeedInDegBySec: 180
+  m_planePrefab: {fileID: 899258389675698689, guid: f0fc80c965f919b4c9b7bccf78680887,
+    type: 3}
+  m_drawPlane: 0
+  m_drawSelectedPlane: 0
+  m_toucheIndicatorDebug: {fileID: 0}
+  m_resolutionRotInDegBySec: 270
+--- !u!114 &529586907496949783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5689226964345511478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3088b3dca1539f4c8993fe8e8abe175, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_width: 3
+  m_heigth: 3
+  m_depth: 3
+  m_voidCubePrefab: {fileID: 6685178312622568407, guid: e8a31cc379420b64b88acbde2ba750a4,
+    type: 3}
+  m_UnitPlaneXPrefab: {fileID: 5577046370975898489, guid: 3124db1a554edfe479f3f0657aefcda4,
+    type: 3}
+  m_UnitPlaneNegXPrefab: {fileID: 2884732151676044542, guid: eae4de556b1782647b2dd3a1ce3e8c63,
+    type: 3}
+  m_UnitPlaneYPrefab: {fileID: 1088853179409961717, guid: 7d359090542449c418a10b973aa93201,
+    type: 3}
+  m_UnitPlaneNegYPrefab: {fileID: 7666140980936309944, guid: 8e95bd57f098633458c5e148fe3bd7d6,
+    type: 3}
+  m_UnitPlaneZPrefab: {fileID: 8617749556305218581, guid: e689f171e24366245907cd8be142dff3,
+    type: 3}
+  m_UnitPlaneNegZPrefab: {fileID: 4610784899934958718, guid: 9bb98b65e9d7f54448ef74bd1aaf26c2,
+    type: 3}
+  m_UnitNeutralPlanePrefab: {fileID: 8617749556305218581, guid: ec2efd3f538b8eb418ff3600040f2efb,
+    type: 3}
+  m_skins:
+  - x: {fileID: 0}
+    minX: {fileID: 0}
+    y: {fileID: 0}
+    minY: {fileID: 0}
+    z: {fileID: 0}
+    minZ: {fileID: 0}
+    neutral: {fileID: 0}
+  - x: {fileID: 0}
+    minX: {fileID: 0}
+    y: {fileID: 0}
+    minY: {fileID: 0}
+    z: {fileID: 0}
+    minZ: {fileID: 0}
+    neutral: {fileID: 0}
+  - x: {fileID: 0}
+    minX: {fileID: 0}
+    y: {fileID: 0}
+    minY: {fileID: 0}
+    z: {fileID: 0}
+    minZ: {fileID: 0}
+    neutral: {fileID: 0}
+  m_currentSkin: 0
+  m_shuffleRotInDegBySec: 720
+  m_winRotationAxis: {x: 0, y: 0, z: 0}
+  m_winRotationSpeedInDegBySec: 30
+  m_onPlayerWin:
+    m_PersistentCalls:
+      m_Calls: []
+  m_lockSliceRotationSpeedInDegBySec: 180
+  m_planePrefab: {fileID: 0}
+  m_drawPlane: 0
+  m_drawSelectedPlane: 0
+  m_toucheIndicatorDebug: {fileID: 0}
+  m_resolutionRotInDegBySec: 270
+  m_rubixRotInDegByPixel: 0.01
+  m_rubixSliceRotInDegByPixel: 0.01
+  m_inverseYAxis: 1
+  m_inverseXAxis: 0
+  m_rangeMouseMovement: 6
+  m_useMobileInput: 0
