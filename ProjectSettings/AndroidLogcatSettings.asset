@@ -3,8 +3,8 @@
     "m_SelectedPackage": {
         "deviceId": "5200630afe8b3585",
         "name": "com.DefaultCompany.RubbixsAdventure",
-        "processId": 32505,
-        "exited": true
+        "processId": 8468,
+        "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
@@ -49,6 +49,12 @@
             "name": "com.DefaultCompany.RubbixsAdventure",
             "processId": 32505,
             "exited": true
+        },
+        {
+            "deviceId": "5200630afe8b3585",
+            "name": "com.DefaultCompany.RubbixsAdventure",
+            "processId": 8468,
+            "exited": false
         }
     ],
     "m_Tags": {

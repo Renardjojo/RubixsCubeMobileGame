@@ -2,22 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 [RequireComponent(typeof(Camera))]
 public class CameraScaler : MonoBehaviour
 {
-    [SerializeField] private float m_zoomSensibility = 1f;
     [SerializeField] private float m_maxZoom = 5f;
     private float m_currentZoom = 0f;
-    [SerializeField] private float m_baseDicstanceScale = 4f;
+    [SerializeField] private float m_baseDistanceScale = 4f;
     private float m_baseDistance = 0f;
-    private float m_currentDicstanceScale = 0f;
-    private bool enableScale = false;
+    private float m_currentDistanceScale = 0f;
+    private bool m_enableScale = false;
     
     private Camera m_camera;
 
 #if !UNITY_STANDALONE
     protected float m_baseDistanceBetweenBothFingers = -1f;
+    private bool fingerDistanceIsInit = false;
+    [SerializeField] private float m_zoomSensibilityFingerScale = 0.001f;
+#else
+    [SerializeField] private float m_zoomSensibilityMouseRool = 0.1f;
 #endif
+    
     
     
     // Start is called before the first frame update
@@ -29,54 +34,62 @@ public class CameraScaler : MonoBehaviour
     void Start()
     {
         m_baseDistance = transform.position.z;
-        m_currentDicstanceScale = m_baseDicstanceScale;
+        m_currentDistanceScale = m_baseDistanceScale;
     }
     
     public void SetDistance(float newScale)
     {
-        m_currentDicstanceScale = newScale;
-        enableScale = true;
+        m_currentDistanceScale = newScale;
+        m_enableScale = true;
     }
     
     void Update()
     {
-        if (enableScale)
+        if (m_enableScale)
         {
-            float goolDistance = m_baseDistance * m_currentDicstanceScale / m_baseDicstanceScale;
+            float goalDistance = m_baseDistance * m_currentDistanceScale / m_baseDistanceScale;
 
-            if (Mathf.Abs(transform.position.z - goolDistance) < 0.01f)
+            if (Mathf.Abs(transform.position.z - goalDistance) < 0.01f)
             {
                 transform.position = new Vector3(transform.position.x,
-                    transform.position.y, goolDistance);
-                enableScale = false;
+                    transform.position.y, goalDistance);
+                m_enableScale = false;
             }
             else
             {
                 transform.position = new Vector3(transform.position.x,
                     transform.position.y,
-                    Mathf.Lerp(transform.position.z, goolDistance, Time.deltaTime));
+                    Mathf.Lerp(transform.position.z, goalDistance, Time.deltaTime));
             }
         }
         
 #if UNITY_STANDALONE
         if (Input.mouseScrollDelta.y != 0)
         {
-            float deltaZoom = Input.mouseScrollDelta.y * m_zoomSensibility;
+            float deltaZoom = -Input.mouseScrollDelta.y * m_zoomSensibilityMouseRool;
 #else
         if (Input.touchCount == 2)
         {
-            if (m_baseDistanceBetweenBothFingers != -1f)
+            if (!fingerDistanceIsInit)
             {
-                m_baseDistanceBetweenBothFingers =
-                    (Input.GetTouch(0).position - Input.GetTouch(1).position).sqrMagnitude;
+                fingerDistanceIsInit = true;
+                m_baseDistanceBetweenBothFingers = (Input.GetTouch(0).position - Input.GetTouch(1).position).magnitude;
+                return;
             }
             
-            float deltaZoom = ((Input.GetTouch(0).position - Input.GetTouch(1).position).sqrMagnitude - m_baseDistanceBetweenBothFingers) * m_zoomSensibility;
+            float newFingerDist = (Input.GetTouch(0).position - Input.GetTouch(1).position).magnitude;
+            float deltaZoom = (m_baseDistanceBetweenBothFingers - newFingerDist) * m_zoomSensibilityFingerScale;
+            m_baseDistanceBetweenBothFingers = newFingerDist;
+
+            if (deltaZoom < Mathf.Epsilon && deltaZoom > -Mathf.Epsilon )
+                return;
+            
+
 #endif
-            if (Mathf.Abs(m_currentZoom - deltaZoom) > m_maxZoom)
+            if (Mathf.Abs(m_currentZoom + deltaZoom) > m_maxZoom)
             {
                 float zoomToDo = 0f;
-                if (m_currentZoom - deltaZoom < 0)
+                if (m_currentZoom + deltaZoom < 0)
                 {
                     zoomToDo = -m_currentZoom - m_maxZoom;
                     m_currentZoom = -m_maxZoom;
@@ -87,19 +100,19 @@ public class CameraScaler : MonoBehaviour
                     zoomToDo = m_maxZoom - m_currentZoom;
                     m_currentZoom = m_maxZoom;
                 }
-                
-                SetDistance(m_currentDicstanceScale - zoomToDo);
+                Debug.Log(zoomToDo + " " + deltaZoom);
+                SetDistance(m_currentDistanceScale + zoomToDo);
             }
             else
             {
-                m_currentZoom -= deltaZoom;
-                SetDistance(m_currentDicstanceScale - deltaZoom);
+                m_currentZoom += deltaZoom;
+                SetDistance(m_currentDistanceScale + deltaZoom);
             }
         }
 #if !UNITY_STANDALONE
-        else if (m_baseDistanceBetweenBothFingers != -1f)
+        else
         {
-            m_baseDistanceBetweenBothFingers = -1f;
+            fingerDistanceIsInit = false;
         }
 #endif
     }

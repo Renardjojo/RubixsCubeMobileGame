@@ -1621,6 +1621,9 @@ MonoBehaviour:
     minZ: {fileID: 2100000, guid: e0956f4b23ae59f438d5d8d558ac2e38, type: 2}
     neutral: {fileID: 0}
   m_currentSkin: 0
+  m_onStart:
+    m_PersistentCalls:
+      m_Calls: []
   m_shuffleRotInDegBySec: 720
   m_planePrefab: {fileID: 0}
   m_drawPlane: 0
@@ -3043,9 +3046,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b736ed3ff2f2442905dce0811f5d95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_zoomSensibility: 0.2
   m_maxZoom: 2
-  m_baseDicstanceScale: 4
+  m_baseDistanceScale: 4
+  m_zoomSensibilityMouseRool: 0.1
 --- !u!4 &963194229
 Transform:
   m_ObjectHideFlags: 0
@@ -3192,8 +3195,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 2878127778265177494, guid: a548f42153c6cd74a96a6200b25e4d63,
-        type: 3}
+      objectReference: {fileID: 1632973647}
     - target: {fileID: 5784683345443657050, guid: 8f6b552e27204614a95b57cb8d5a8049,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -5967,8 +5969,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 651285809313586365, guid: 84b81b94d9a90ce4ea84baae8743fc81,
-        type: 3}
+      objectReference: {fileID: 655736998}
     - target: {fileID: 5784683345443657050, guid: 8f6b552e27204614a95b57cb8d5a8049,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName

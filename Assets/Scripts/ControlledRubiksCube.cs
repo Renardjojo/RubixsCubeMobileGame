@@ -163,7 +163,7 @@ public class ControlledRubiksCube : RubiksCube
                 
                 //if direction is not defined, watch the direction of the mouse
                 if (!m_resultRayCast.m_directionTurnIsDefinited) 
-                    DefinitedDirectionTurn(-movement.normalized);
+                    DefineDirectionTurn(-movement.normalized);
                     
                 if (m_resultRayCast.m_directionRowDefinited)
                     dotProduct = Vector3.Dot(-movement.normalized, m_resultRayCast.m_normalRow);
@@ -225,13 +225,14 @@ public class ControlledRubiksCube : RubiksCube
     void UnselectRubixSlice()
     {
         float rotationTodo = -m_sliceDeltaAngle % 90f;
-        
-        if (m_sliceDeltaAngle > 45f)
+
+        if (-rotationTodo > 45f)
             rotationTodo += 90f;
-        else if (m_sliceDeltaAngle < -45f)
+        else if (-rotationTodo < -45f)
             rotationTodo -= 90f;
  
-        m_resolutionSteps.Push(new StepResolution(-(m_sliceDeltaAngle + rotationTodo), currentPlaneSelectedID));
+        if (!Approximately(-(m_sliceDeltaAngle + rotationTodo), 0f, Mathf.Epsilon))
+            m_resolutionSteps.Push(new StepResolution(-(m_sliceDeltaAngle + rotationTodo), currentPlaneSelectedID));
         m_lockSliceCoroutine = StartCoroutine(SmoothSliceLockRotationCorroutineAndCheckIfWin(m_selectedSlice, rotationTodo, m_lockSliceRotationSpeedInDegBySec));
 
         m_sliceDeltaAngle = 0f;
@@ -241,7 +242,7 @@ public class ControlledRubiksCube : RubiksCube
         m_resultRayCast.m_directionRowDefinited = false;
     }
     
-    protected void DefinitedDirectionTurn(Vector3 direction)
+    protected void DefineDirectionTurn(Vector3 direction)
     {
         float RowDotProduct = Vector3.Dot(direction.normalized, m_resultRayCast.m_normalRow);
         if (RowDotProduct >= 0.5f || RowDotProduct <= -0.5f)

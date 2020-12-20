@@ -624,14 +624,14 @@ public class RubiksCube : MonoBehaviour
             
             m_selectedPlane = m_listPlane[stepResolutionData.planeID];
             angleToDo %= 360f;
-            if (Approximately(angleToDo, 0f, 0))
+            if (Approximately(angleToDo, 0f, Mathf.Epsilon))
                 continue;
             
             //Avoid unecessary rotation the fell that solve copy all movement
             float shortestAngle;
-            if (stepResolutionData.angle > 180f)
+            if (angleToDo > 180f)
                 shortestAngle = angleToDo - 360f;
-            else if (stepResolutionData.angle < -180f)
+            else if (angleToDo < -180f)
                 shortestAngle = angleToDo + 360f;
             else
                 shortestAngle = angleToDo;
