@@ -13,13 +13,13 @@
 - [Command](##Command "Goto command part")
 - [How to compil](##How-to-compil "Goto compil part")
 - [How to launch](##How-to-launch "Goto launch part")
+- [Technical aspect](##Technical-aspect "Goto Technical aspect part")
 - [Bug](##Bug "Goto bug part")
-- [Technical aspect](##Bug "Goto Technical aspect part")
 - [Credit](##Credit "Goto credit part")
 - [License](##License "Goto license part")
 
 
-## Descritpion
+## Description
 Rubik's cube mobile game made with Unity game engine. We can play it on a phone and on pc (we must to change a parameter).
 This project is a Rubik's cube. We can move slice of the cube and the whole cube to have all the faces of one color.
 We had to use the quaternion to rotate the cube.
@@ -48,7 +48,7 @@ Switch in file/build settings from android to "PC, Mac, Linux Standalone" and cl
 ### Mobile :
 Switch in file/build settings from android to "Android" or "iOS" and clic on build after selected a folder
 
-##How to launch
+## How to launch
 ### Standalone :
 
 ### Mobile :
