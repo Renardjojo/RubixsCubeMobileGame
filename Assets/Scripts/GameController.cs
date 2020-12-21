@@ -2,14 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    [SerializeField] protected UnityEvent m_onStart;
+    
     public void Start()
     {
         AudioListener.volume = PlayerPrefs.GetFloat("generalVolume", 0.5f);
         QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("QualityLevel", QualitySettings.GetQualityLevel()));
+        
+        m_onStart?.Invoke();
     }
     
     public void SavePrefs()
@@ -46,6 +51,11 @@ public class GameController : MonoBehaviour
     public void LoadNewSceneWithName(string name)
     {
         SceneManager.LoadScene(name, LoadSceneMode.Single);
+    }
+
+    public void LoadNewSceneAsyncWithName(string name)
+    {
+        SceneManager.LoadSceneAsync(name, LoadSceneMode.Single);
     }
     
     public void QuitApplication()
