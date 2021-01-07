@@ -10,7 +10,7 @@ public class MusicSelector : MonoBehaviour
     [SerializeField] private AudioClip[] m_musicContainer;
     private AudioSource m_currentMusic;
     private int indexCurrentMusic = 0;
-    
+
     // Start is called before the first frame update
     void Awake()
     {

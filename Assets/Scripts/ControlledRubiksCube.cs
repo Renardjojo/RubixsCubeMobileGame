@@ -107,6 +107,7 @@ public class ControlledRubiksCube : RubiksCube
             if (m_resultRayCast.m_isDefinited)
             {
                 UnselectRubixSlice();
+                soundClick.Invoke();
             } else
             
 #if UNITY_EDITOR
@@ -218,6 +219,7 @@ public class ControlledRubiksCube : RubiksCube
                     m_toucheIndicatorDebug.transform.position = hit.point;
 #endif
                 m_resultRayCast.m_isDefinited = true;
+                soundClick.Invoke();
             }
         }
     }

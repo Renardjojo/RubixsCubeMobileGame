@@ -80,6 +80,8 @@ public class RubiksCube : MonoBehaviour
         protected Stack<StepResolution> m_resolutionSteps;
         protected int currentPlaneSelectedID = -1;
         protected Coroutine m_solveCoroutine = null;
+
+        [Header("Sound")] [SerializeField] public UnityEvent soundClick;
     
     public int sizeRubiksCube
     {
