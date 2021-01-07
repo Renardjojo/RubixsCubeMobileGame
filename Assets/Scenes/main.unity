@@ -2493,9 +2493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36ee3f1ec413356419df998ab17a4816, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soundClick:
-    m_PersistentCalls:
-      m_Calls: []
+  m_soundClickMusic: {fileID: 8300000, guid: d38f63464a0ce754eb0b6e44321082a3, type: 3}
 --- !u!1001 &842760607
 PrefabInstance:
   m_ObjectHideFlags: 0
