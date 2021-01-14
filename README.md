@@ -1,4 +1,4 @@
-# RubixsClubMobileGame
+# RubixsCubeMobileGame
 
 > Game programmers :
 > Chopin Melie,
