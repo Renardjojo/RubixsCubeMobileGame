@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour
         
         m_onStart?.Invoke();
     }
-    
+
     public void SavePrefs()
     {
         PlayerPrefs.Save();

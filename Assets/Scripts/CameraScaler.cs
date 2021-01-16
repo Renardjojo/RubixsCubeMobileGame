@@ -28,6 +28,7 @@ public class CameraScaler : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        m_zoomSensibilityMouseRool *= PlayerPrefs.GetFloat("ZoomSensibility", 1f);
         m_camera = GetComponent<Camera>();
     }
 

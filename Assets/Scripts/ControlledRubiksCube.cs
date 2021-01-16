@@ -22,8 +22,8 @@ public class ControlledRubiksCube : RubiksCube
     [Header("Lock slice setting")]
         [SerializeField] protected float m_lockSliceRotationSpeedInDegBySec = 180;
         protected Coroutine m_lockSliceCoroutine = null;
-    
-    [Header("Input Setting")]
+
+        [Header("Input Setting")]
         //This value will be multiplicate by the length of the cursor movement when all the rubix cube is rotate
         [SerializeField] protected float m_rubixRotInDegByPixel = 0.01f;       
         [SerializeField] protected float m_rubixSliceRotInDegByPixel = 0.01f;
@@ -54,7 +54,16 @@ public class ControlledRubiksCube : RubiksCube
     [Header("Debug")]
         [SerializeField] protected GameObject m_toucheIndicatorDebug;
 #endif
-        
+
+    protected override void Start()
+    {
+        base.Start();
+
+        m_rubixRotInDegByPixel *= PlayerPrefs.GetFloat("RubixSensibility" ,1f);
+        m_rubixSliceRotInDegByPixel *= PlayerPrefs.GetFloat("SliceSensibility", 1f);
+        m_lockSliceRotationSpeedInDegBySec *= PlayerPrefs.GetFloat("LockSpeed", 1f);
+    }
+
     protected override void Init()
     {
         if (m_winCoroutine != null)
