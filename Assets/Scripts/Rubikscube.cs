@@ -81,7 +81,7 @@ public class RubiksCube : MonoBehaviour
         protected int currentPlaneSelectedID = -1;
         protected Coroutine m_solveCoroutine = null;
     
-    public int sizeRubiksCube
+    public int SizeRubiksCube
     {
         get
         {
@@ -90,8 +90,11 @@ public class RubiksCube : MonoBehaviour
     }
     
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
+        m_shuffleRotInDegBySec *= PlayerPrefs.GetFloat("ShuffleSpeed", 1f);
+        m_resolutionRotInDegBySec *= PlayerPrefs.GetFloat("ShuffleSpeed", 1f);
+            
         Init();
         m_onStart?.Invoke();
     }
@@ -307,9 +310,9 @@ public class RubiksCube : MonoBehaviour
 
         if (normal == Vector3.right || normal == Vector3.left)
         {
-            for (int i = index / sizeRubiksCube * sizeRubiksCube; i < m_cubes.Count; i++)
+            for (int i = index / SizeRubiksCube * SizeRubiksCube; i < m_cubes.Count; i++)
             {
-                if (i >= index / sizeRubiksCube * sizeRubiksCube + sizeRubiksCube)
+                if (i >= index / SizeRubiksCube * SizeRubiksCube + SizeRubiksCube)
                     return column;
                 column.Add(m_cubes[i]);
             }
@@ -328,9 +331,9 @@ public class RubiksCube : MonoBehaviour
 
         if (normal == Vector3.up || normal == Vector3.down)
         {
-            for (int i = index / sizeRubiksCube * sizeRubiksCube; i < m_cubes.Count; i++)
+            for (int i = index / SizeRubiksCube * SizeRubiksCube; i < m_cubes.Count; i++)
             {
-                if (i >= index / sizeRubiksCube * sizeRubiksCube + sizeRubiksCube)
+                if (i >= index / SizeRubiksCube * SizeRubiksCube + SizeRubiksCube)
                     return row;
                 row.Add(m_cubes[i]);
             }
@@ -340,11 +343,11 @@ public class RubiksCube : MonoBehaviour
         if (normal == Vector3.left)
         {
             int inccrements = 0;
-            int indexFirstFaces = index < sizeRubiksCube ? index / m_width * m_heigth: (index % (sizeRubiksCube));
+            int indexFirstFaces = index < SizeRubiksCube ? index / m_width * m_heigth: (index % (SizeRubiksCube));
             for (int i = indexFirstFaces; i < m_cubes.Count; i++)
             {
-                if (i % m_width == 0 && i != indexFirstFaces && i + sizeRubiksCube - m_width < m_cubes.Count)
-                    i += sizeRubiksCube - m_width;
+                if (i % m_width == 0 && i != indexFirstFaces && i + SizeRubiksCube - m_width < m_cubes.Count)
+                    i += SizeRubiksCube - m_width;
 
                 inccrements += 1;
             
@@ -358,15 +361,15 @@ public class RubiksCube : MonoBehaviour
         
         if (normal == Vector3.forward)
         {
-            int indexFace = index % sizeRubiksCube;
+            int indexFace = index % SizeRubiksCube;
             if (indexFace % m_width != 0)
                 indexFace -= indexFace % m_width;
             
             int inc = 0;
             for (int i = indexFace; i < m_cubes.Count; i++)
             {
-                if (i % m_width == 0 && i != indexFace && i + sizeRubiksCube - m_width < m_cubes.Count)
-                    i += sizeRubiksCube - m_width;
+                if (i % m_width == 0 && i != indexFace && i + SizeRubiksCube - m_width < m_cubes.Count)
+                    i += SizeRubiksCube - m_width;
 
                 inc += 1;
             
@@ -380,11 +383,12 @@ public class RubiksCube : MonoBehaviour
         }
         
         int increment = 0;
-        int indexFirstFace = index < sizeRubiksCube ? index / m_width * m_heigth: (index % (sizeRubiksCube) - 1) / m_width * m_width;
+        int indexFirstFace = index < SizeRubiksCube ? index / m_width * m_heigth: (index % (SizeRubiksCube) - 1) / 
+        m_width * m_width;
         for (int i = indexFirstFace; i < m_cubes.Count; i++)
         {
-            if (i % m_width == 0 && i != indexFirstFace && i + sizeRubiksCube - m_width < m_cubes.Count)
-                i += sizeRubiksCube - m_width;
+            if (i % m_width == 0 && i != indexFirstFace && i + SizeRubiksCube - m_width < m_cubes.Count)
+                i += SizeRubiksCube - m_width;
 
             increment += 1;
             

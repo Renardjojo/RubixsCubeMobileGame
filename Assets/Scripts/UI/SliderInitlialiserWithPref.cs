@@ -7,11 +7,18 @@ using UnityEngine.UI;
 public class SliderInitlialiserWithPref : MonoBehaviour
 {
     [SerializeField] private string m_prefName;
-    [SerializeField] private float m_defaultValue;
+    [SerializeField] private TextSliderLink m_textSliderLinker;
 
     // Start is called before the first frame update
     void Start()
     {
-        GetComponent<Slider>().value = PlayerPrefs.GetFloat(m_prefName, m_defaultValue);
+        Slider slider = GetComponent<Slider>();
+        slider.value = PlayerPrefs.GetFloat(m_prefName, slider.value);
+        m_textSliderLinker?.SetTextWithRoundFloat(slider.value);
+    }
+
+    public void SetValuePref(float in_value)
+    {
+        PlayerPrefs.SetFloat(m_prefName, in_value);
     }
 }
