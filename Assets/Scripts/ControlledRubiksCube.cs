@@ -302,6 +302,9 @@ public class ControlledRubiksCube : RubiksCube
         if (m_winCoroutine == null)
         {
             m_winCoroutine = StartCoroutine(InfinitRotateCoroutine(m_winRotationAxis, m_winRotationSpeedInDegBySec));
+#if UNITY_ANDROID
+            Handheld.Vibrate();
+#endif
         }
     }
     

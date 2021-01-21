@@ -1,9 +1,9 @@
 {
-    "m_SelectedDeviceId": "5200630afe8b3585",
+    "m_SelectedDeviceId": "RZ8N92L687H",
     "m_SelectedPackage": {
-        "deviceId": "5200630afe8b3585",
+        "deviceId": "RZ8N92L687H",
         "name": "com.DefaultCompany.RubbixsAdventure",
-        "processId": 8468,
+        "processId": 9267,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -54,6 +54,18 @@
             "deviceId": "5200630afe8b3585",
             "name": "com.DefaultCompany.RubbixsAdventure",
             "processId": 8468,
+            "exited": false
+        },
+        {
+            "deviceId": "RZ8N92L687H",
+            "name": "com.DefaultCompany.RubbixsAdventure",
+            "processId": 26217,
+            "exited": false
+        },
+        {
+            "deviceId": "RZ8N92L687H",
+            "name": "com.DefaultCompany.RubbixsAdventure",
+            "processId": 9267,
             "exited": false
         }
     ],
